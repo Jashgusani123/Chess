@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chess - Login / Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/stylesheet/style.css">
+
+</head>
+
+<body class="w-full h-screen flex items-center justify-center bg-zinc-800 overflow-hidden">
+    <div class="login_containerw-[80%] max-w-[1200px] h-[90%] bg-zinc-900 rounded-lg shadow-lg overflow-hidden flex">
+        <div class="con bg-zinc-900 w-full h-full flex flex-row">
+            <form action="" class=" w-[60%] h-full flex gap-8 p-8 flex-col ">
+                <div class="img w-full h-[20%] flex items-center">
+                    <img src="/images/Logopng.webp" class="h-[100%] w-[25%]" alt=""><span class="text-white"><span class="text-white text-4xl font-bold">Welcome Back to Chess</span><p>Login</p> </span>
+                </div>
+                <div class="fields h-[50%] flex justify-between items-center flex-col gap-8">
+                    <input type="email" class=" bg-transparent border-solid border-2 border-white-500 rounded-md w-96 px-2 py-4 item-center text-white" placeholder="Email" name="email">
+                    <input type="password" class="bg-transparent border-solid border-2 border-white-500 rounded-md w-96 px-2 py-4 item-center text-white" placeholder="Password" name="password">
+                    <button class="bg-green-600 w-40 text-white text-2xl h-full rounded-md p-4">Login</button>
+                    <a href="/signup" class="text-white">Create new Account - <span class="text-[lightgreen]">SignUp</span></a>
+                </div>
+            </form>
+            <div class="image w-[40%] h-full">
+                <img src="/images/backimage.webp" class="h-full w-full" alt="">
+            </div>
+        </div>
+    </div>
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+        integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+        integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/javascript/ChessGame.js"></script>
+</body>
+
+</html>

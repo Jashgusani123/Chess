@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chess - Login / Create Account</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/stylesheet/style.css">
+</head>
+
+<body class="w-full h-screen flex items-center justify-center bg-zinc-800 overflow-hidden">
+    <div class="signup_container w-[80%] max-w-[1200px] h-[90%] bg-zinc-900 rounded-lg shadow-lg overflow-hidden flex">
+        <!-- Left Image Section -->
+        <div class="image w-[40%] h-full">
+            <img src="/images/backimage.webp" class="h-full w-full object-cover" alt="">
+        </div>
+
+        <!-- Signup Form -->
+        <form action="/createuser" enctype="multipart/form-data" method="post" class="w-[60%] h-full flex flex-col gap-4 p-8 justify-center items-center">
+            <!-- Logo and Title -->
+            <div class="img w-full h-[20%] flex items-center justify-center ">
+                <img src="/images/Logopng.webp" class="h-full w-[25%] " alt=""><span class="text-white">
+                <span class="text-white text-4xl font-bold">Build Your Chess Empire</span><p>Create Account</p>
+            </span>
+            </div>
+
+            <!-- Avatar Selector -->
+            <div class="flex flex-col items-center justify-center w-[30%] mb-1">
+                <!-- File Input for Avatar -->
+                <input
+                    id="avatar-input"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    onchange="handleImageChange(event)"
+                    name="avatar"
+                />
+                <!-- Label with Camera Icon and Avatar Preview -->
+                <label
+                    for="avatar-input"
+                    class="relative cursor-pointer w-[50%] aspect-square flex items-center justify-center rounded-full border-2 border-gray-300 bg-gray-100 overflow-hidden hover:bg-gray-200 transition"
+                >
+                    <!-- Avatar Preview -->
+                    <img
+                        id="avatar-preview"
+                        src=""
+                        alt="Avatar Preview"
+                        class="w-full h-full object-cover hidden"
+                    />
+                    <!-- Camera Icon (Visible only when no image is selected) -->
+                    <svg
+                        id="camera-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-12 h-12 text-gray-500"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M3 10l3-3m0 0l3-3m-3 3v12m6-6h12M9 5h9a2 2 0 012 2v9m0 0l-3 3m3-3l-3-3"
+                        />
+                    </svg>
+                </label>
+            </div>
+
+            <!-- Form Fields -->
+            <div class="fields w-full flex flex-col items-center gap-4">
+                <input type="text" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Username" name="username">
+                <input type="email" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Email" name="email">
+                <input type="password" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Password" name="password">
+                <button class="w-[40%] bg-green-600 text-white text-lg h-10 rounded-md hover:bg-green-700 transition" type="submit">Sign Up</button>
+            </div>
+        </form>
+
+        <!-- Redirect Link -->
+        <a href="/login" class="text-white mt-4">Already Have an Account - <span class="text-[lightgreen]">Login</span></a>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+        integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+        integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        function handleImageChange(event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById("avatar-preview");
+            const cameraIcon = document.getElementById("camera-icon");
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    preview.src = reader.result;
+                    preview.classList.remove("hidden"); // Show the preview
+                    cameraIcon.classList.add("hidden"); // Hide the camera icon
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+    <script src="/javascript/ChessGame.js"></script>
+</body>
+
+</html>
