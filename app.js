@@ -76,7 +76,7 @@ app.post("/createuser", upload.single("avatar"), async (req, res) => {
                 console.log(converted_password); 
                 const user = new User({ username, email, password: converted_password, avatar: avatarUrl });
                 await user.save(); 
-                cookieSender(res, user);
+                cookieSender(res, user , "User Created Sucessfully!!");
                 res.redirect("/");
             }
         );
