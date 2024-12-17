@@ -17,15 +17,17 @@
             <div class="logo h-full w-1/4 flex justify-center items-center ">
                 <img src="/images/Logopng.webp" class="h-[93%] w-[30%]" alt=""> <span class="text-white text-4xl ">Chess</span>
             </div>
-            <div class="options h-full w-1/4 flex justify-center items-center gap-8 text-2xl text-white">
+            <div class="options h-full w-1/3 flex justify-center items-center gap-6 text-2xl text-white">
                 <a href="">Home</a>
-                <a href="">Profile</a>
+                <a href="/profile">Profile</a>
+                <a href="/mygames">MyGames</a>
+                <a href="/notifications">Notifications</a>
             </div>
         </nav>
     </header>
 
     <!-- Main Content -->
-    <div class="flex-grow flex items-center justify-center overflow-hidden">
+    <div class="flex-grow flex items-center justify-start overflow-hidden">
         <div class="first_container w-full h-full flex justify-between gap-8 p-6" >
             <div class="image w-[100%] h-full" >
                 <img src="/images/backimage.webp" alt="Chess Image.." class="h-full w-full">
@@ -36,7 +38,22 @@
                 <button class="btn bg-green-600 text-white p-2 w-1/6 flex justify-center text-2xl rounded-md ">Play Game </button>
             </div>
         </div>
-        <div class="chessboard bg-red-800"></div>
+        <div class="chess_container w-[60%] h-full hidden justify-center bg-zinc-800 border-4 border-black-500 rounded-md items-center p-10">
+            <div class="chessboard bg-red-800"></div>
+        </div>
+        <div class="chess_chat w-[40%] h-full hidden flex-col justify-center items-center bg-black border-4 border-black-500 rounded-md">
+            <div class="chat_container w-full h-full bg-black rounded-md p-2 flex flex-col justify-between gap-2">
+                <img src="https://imgs.search.brave.com/sLCJKhO4Vuh04fRr1cDGzLrPTALNuNV2FBfrm0LgDCg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5nbWFydC5jb20v/ZmlsZXMvMTEvUGVv/cGxlLUNoYXQtUE5H/LUZpbGUucG5n" alt="" class="w-full h-[80%] chat_image ">
+                <div class="chat_box h-[80%] hidden w-full bg-zinc-900 rounded-md p-2 flex flex-col ">
+                </div>
+                <div class="input_fileds flex justify-between items-center h-[20%]">
+
+                    <input type="text" class="w-[90%] text-white h-[85%] bg-zinc-900 rounded-md p-2" placeholder="Enter your message here..." name="message">
+                    <button class="send_btn bg-zinc-900 h-[44%] rounded-full text-white p-2 flex justify-center text-2xl rounded-md " ><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/></svg></button>
+                </div>
+            </div>
+        </div>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -46,7 +63,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
         integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="/javascript/ChessGame.js"></script>
+    <script type="module" src="/javascript/ChessGame.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Chess Game</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/1.0.0/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+        integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="/stylesheet/watch.css">
+</head>
+<body class="w-full h-screen flex flex-col bg-zinc-900 overflow-hidden">
+    <div class="container_watch flex gap-10 flex-col items-center justify-center">
+        <a href="/" class="absolute top-[3%] left-[3%] font-bold text-white text-2xl bg-transparent"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a>
+        <h1 style="text-align: center;" class="text-white text-4xl">Chess Game Replay</h1>
+        <div id="board"></div>
+        <div id="control-buttons" style="text-align: center; margin-top: 20px;">
+            <button id="prevBtn" class="bg-red-500  text-white px-4 py-2 rounded-md" disabled>Previous Move</button>
+            <button id="nextBtn" class="bg-green-500 text-white px-4 py-2 rounded-md">Next Move</button>
+        </div>
+    </div>
+
+    <script>
+        const chess = new Chess();
+        let moveIndex = 0;
+        let gameMoves = []; 
+    
+        const fetchGameMoves = async () => {
+            try {
+                const response = await fetch('http://localhost:3000/getrecording');  
+                const data = await response.json();
+                gameMoves = data.moves;  
+                renderBoard();  
+            } catch (error) {
+                console.error('Error fetching game moves:', error);
+            }
+        };
+    
+        const renderBoard = () => {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            const board = chess.board();
+            board.forEach((row, rowIndex) => {
+                row.forEach((square, squareIndex) => {
+                    const squareElement = document.createElement('div');
+                    squareElement.classList.add('square', (rowIndex + squareIndex) % 2 === 0 ? 'light' : 'dark');
+    
+                    if (square) {
+                        squareElement.textContent = square.type.toUpperCase();
+                        squareElement.style.color = square.color === 'w' ? 'white' : 'black';
+                        squareElement.style.fontSize = '30px';
+                    }
+    
+                    boardElement.appendChild(squareElement);
+                });
+            });
+    
+            document.getElementById('prevBtn').disabled = moveIndex <= 0;
+    
+            document.getElementById('nextBtn').disabled = moveIndex >= gameMoves.length;
+        };
+
+        const handlePawnPromotion = (move) => {
+            if ((move.from[1] === '7' && move.color === 'w') || (move.from[1] === '2' && move.color === 'b')) {
+                move.promotion = 'q'; 
+            }
+            return move;
+        };
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if (moveIndex < gameMoves.length) {
+                const move = handlePawnPromotion(gameMoves[moveIndex]);
+                chess.move({ from: move.from, to: move.to, promotion: move.promotion });
+                moveIndex++;
+                renderBoard();
+            }
+        });
+    
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            if (moveIndex > 0) {
+                moveIndex--;
+                const move = handlePawnPromotion(gameMoves[moveIndex]);
+                chess.undo();
+                renderBoard();
+            }
+        });
+    
+        fetchGameMoves();
+    </script>
+    
+</body>
+</html>

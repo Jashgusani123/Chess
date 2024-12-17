@@ -17,7 +17,7 @@
         </div>
 
         <!-- Signup Form -->
-        <form action="/createuser" enctype="multipart/form-data" method="post" class="w-[60%] h-full flex flex-col gap-4 p-8 justify-center items-center">
+        <form action="/register" enctype="multipart/form-data" method="post" class="w-[60%] h-full flex flex-col gap-4 p-8 justify-center items-center">
             <!-- Logo and Title -->
             <div class="img w-full h-[20%] flex items-center justify-center ">
                 <img src="/images/Logopng.webp" class="h-full w-[25%] " alt=""><span class="text-white">
@@ -26,7 +26,7 @@
             </div>
 
             <!-- Avatar Selector -->
-            <div class="flex flex-col items-center justify-center w-[30%] mb-1">
+            <div class="flex flex-col items-center justify-center w-[25%] mb-1">
                 <!-- File Input for Avatar -->
                 <input
                     id="avatar-input"
@@ -68,16 +68,22 @@
             </div>
 
             <!-- Form Fields -->
-            <div class="fields w-full flex flex-col items-center gap-4">
-                <input type="text" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Username" name="username">
-                <input type="email" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Email" name="email">
-                <input type="password" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Password" name="password">
-                <button class="w-[40%] bg-green-600 text-white text-lg h-10 rounded-md hover:bg-green-700 transition" type="submit">Sign Up</button>
+            <div class="fields w-full flex  items-center gap-2">
+                <div class="first w-full flex flex-col items-center gap-2">
+                    <input type="text" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Name" name="name">
+                    <input type="text" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Username" name="username">
+                    <input type="text" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Gender" name="gender">
+                </div>
+                <div class="second w-full flex flex-col items-center gap-2">
+                    <input type="email" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Email" name="email">
+                    <input type="password" class="w-[80%] bg-transparent border-2 border-white rounded-md px-2 text-white py-4" placeholder="Password" name="password">
+                </div>
             </div>
+            <button class="w-[40%] bg-green-600 text-white text-lg h-10 rounded-md hover:bg-green-700 transition" type="submit">Sign Up</button>
+            <a href="/login" class="text-white mt-4">Already Have an Account - <span class="text-[lightgreen]">Login</span></a>
         </form>
 
         <!-- Redirect Link -->
-        <a href="/login" class="text-white mt-4">Already Have an Account - <span class="text-[lightgreen]">Login</span></a>
     </div>
 
     <!-- Scripts -->

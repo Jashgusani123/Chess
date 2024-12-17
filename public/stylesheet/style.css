@@ -34,7 +34,6 @@ nav{
 .piece.black {
     color: black;
     filter: drop-shadow(0 0 2px rgb(255, 255, 255));
-
 }
 
 .flipped {
@@ -80,3 +79,39 @@ nav{
         height: 13%;
     }
 }
+.profile-image {
+    background-image: url('https://imgs.search.brave.com/AHiM_5808gWIj56udGrnIqbHKPQh5oUkzBOL31XTzIg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jaGVz/c2lmeS5tZS9kZ19z/dGF0aWMvd2Vic2l0/ZS9hc3NldHMvaW1h/Z2VzL2ltYWdlX3Np/bmdsZTE4OC53ZWJw');
+    background-size: cover;  /* Ensures the image covers the entire container */
+    background-position: center;  /* Centers the image */
+    width: 100%;  /* Set the width of the div */
+    height: 300px;  /* Adjust the height as needed */
+}
+.profile-title{
+    text-shadow: 0 4px 4px black;
+}
+
+.chat_box {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Enables scrolling when content overflows */
+  }
+
+  .message {
+    color: white; /* White text */
+  }
+  .chat_box::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+  }
+  
+  .chat_box::-webkit-scrollbar-thumb {
+    background-color: #4b5563; /* Darker scrollbar thumb */
+    border-radius: 10px; /* Rounded scrollbar thumb */
+  }
+  
+  .chat_box::-webkit-scrollbar-track {
+    background: #2d3748; /* Darker track background */
+  }
+
+
+
+  

@@ -1,12 +1,38 @@
 const btn = document.querySelector(".btn");
+const message = document.querySelector("input[name='message']");
+const send_btn = document.querySelector(".send_btn");
+const chess_container = document.querySelector(".chess_container");
+const chess_chat = document.querySelector(".chess_chat");
+const chat_box = document.querySelector(".chat_box");
+const chat_image = document.querySelector(".chat_image");
+let socket;
+
+send_btn.addEventListener("click", function (e) {
+  e.preventDefault();
+  if (socket) {
+    socket.emit("newmessage", { message: message.value });
+    message.value = "";
+  }
+});
 
 btn.addEventListener("click", function (e) {
   // Disable button to prevent multiple initializations
-  e.preventDefault()
+  e.preventDefault();
   btn.disabled = true;
+  socket = io();
+  // Emit the userId to the server after connecting
 
+  socket.on("comenewmessage", function (senderId, message) {
+    chat_box.style.display = "flex";
+    chat_image.style.display = "none";
+    
+    if (senderId === socket.id) {
+      chat_box.innerHTML += `<p class="message text-white"><span class="text-yellow-600">You</span> : ${message.message}</p>`;
+    } else {
+      chat_box.innerHTML += `<p class="message text-white"><span class="text-red-600">Opposite Player</span> : ${message.message}</p>`;
+    }
+  });
 
-  const socket = io();
   const chess = new Chess(); // Initialize chess.js
   const boardElement = document.querySelector(".chessboard");
   const first_container = document.querySelector(".first_container");
@@ -17,9 +43,11 @@ btn.addEventListener("click", function (e) {
   const renderBoard = () => {
     const board = chess.board();
     boardElement.innerHTML = ""; // Clear existing board
-    first_container.style.display = "none"
-    boardElement.style.display = "grid"
-    document.querySelector("body").classList.add("body")
+    first_container.style.display = "none";
+    boardElement.style.display = "grid";
+    chess_chat.style.display = "flex";
+    chess_container.style.display = "flex";
+    document.querySelector("body").classList.add("body");
 
     board.forEach((row, rowIndex) => {
       row.forEach((square, squareIndex) => {
@@ -91,7 +119,6 @@ btn.addEventListener("click", function (e) {
       to: `${String.fromCharCode(97 + target.col)}${8 - target.row}`,
       promotion: "q", // Always promote to queen
     };
-
     // Attempt the move locally
     const moveResult = chess.move(move);
     if (moveResult) {
@@ -121,7 +148,6 @@ btn.addEventListener("click", function (e) {
     return unicodePieces[piece.type] || "";
   };
 
-  // Socket event listeners
   socket.on("playerRole", (role) => {
     playerRole = role;
     renderBoard();
@@ -147,7 +173,9 @@ btn.addEventListener("click", function (e) {
     chess.reset();
     renderBoard();
   });
-
+  socket.on("sendRecording", (game_id,type) => {
+    window.location.href = `/game/${game_id}?type=${type}`;
+  });
   // Initial board render
   renderBoard();
 });

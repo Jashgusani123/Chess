@@ -1,0 +1,40 @@
+  #board {
+    border-collapse: collapse;
+    width: 400px;
+    height: 400px;
+  }
+
+  .square {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .light {
+    background-color: #4b2504;
+  }
+
+  .dark {
+    background-color: #9a9a9e;
+  }
+
+  .piece {
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  
+
+  .piece_white {
+    color: white; /* White pieces */
+    
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
+}
+
+.piece_black {
+    color: black;
+    filter: drop-shadow(0 0 2px rgb(255, 255, 255));
+  }
+  
