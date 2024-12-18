@@ -10,22 +10,27 @@
     padding-bottom: 1px;
     border-radius: 5px;
 }
-.body{
+
+
+.body {
     background-image: url('https://imgs.search.brave.com/vsTTYSdErZrQUI-_iyDFvmBh-8oKAugNwTW_-qTIEMU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93YWxs/cGFwZXJhY2Nlc3Mu/Y29tL2Z1bGwvMTIz/MTg2NC5qcGc'), radial-gradient(circle, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 1) 100%);
-  background-size: cover;  
-  background-position: center;  
-  background-repeat: no-repeat; 
-  height: 100vh;  
-  margin: 0;
+    background-size: cover;  
+    background-position: center;  
+    background-repeat: no-repeat; 
+    height: 100vh;  
+    margin: 0;
 }
-.hearder{
+
+.hearder {
     background-color: #504f4d;
-    /* background-color: black; */
     height: 15%;
+    padding: 0 10px;
 }
-nav{
+
+nav {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
+
 .piece.white {
     color: whitesmoke;
     filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
@@ -73,45 +78,74 @@ nav{
     transform: rotate(180deg);
 }
 
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+    .chessboard {
+        width: 300px;
+        height: 300px;
+    }
 
-@media screen and (max-width:468px) {
-    .hearder{
-        height: 13%;
+    .square {
+        width: 40px;
+        height: 40px;
+    }
+
+    .piece {
+        font-size: 28px;
+    }
+
+    .body {
+        background-position: center;
+    }
+
+    .header {
+        height: 12%;
+    }
+    
+    .profile-image {
+        height: 250px;
+    }
+
+    .chat_box {
+        flex-direction: column;
+        padding: 5px;
+    }
+
+    .message {
+        font-size: 14px; /* Adjust message font size for mobile */
     }
 }
-.profile-image {
-    background-image: url('https://imgs.search.brave.com/AHiM_5808gWIj56udGrnIqbHKPQh5oUkzBOL31XTzIg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jaGVz/c2lmeS5tZS9kZ19z/dGF0aWMvd2Vic2l0/ZS9hc3NldHMvaW1h/Z2VzL2ltYWdlX3Np/bmdsZTE4OC53ZWJw');
-    background-size: cover;  /* Ensures the image covers the entire container */
-    background-position: center;  /* Centers the image */
-    width: 100%;  /* Set the width of the div */
-    height: 300px;  /* Adjust the height as needed */
+
+@media screen and (max-width: 468px) {
+    .header {
+        height: 13%;
+    }
+
+    .chessboard {
+        width: 250px;
+        height: 250px;
+    }
+
+    .square {
+        width: 30px;
+        height: 30px;
+    }
+
+    .piece {
+        font-size: 24px;
+    }
+
+    .profile-image {
+        height: 200px;
+    }
+
+    .chat_box {
+        padding: 5px;
+    }
+
+    .message {
+        font-size: 12px; /* Adjust message font size for smaller screens */
+    }
 }
-.profile-title{
-    text-shadow: 0 4px 4px black;
-}
-
-.chat_box {
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto; /* Enables scrolling when content overflows */
-  }
-
-  .message {
-    color: white; /* White text */
-  }
-  .chat_box::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
-  }
-  
-  .chat_box::-webkit-scrollbar-thumb {
-    background-color: #4b5563; /* Darker scrollbar thumb */
-    border-radius: 10px; /* Rounded scrollbar thumb */
-  }
-  
-  .chat_box::-webkit-scrollbar-track {
-    background: #2d3748; /* Darker track background */
-  }
 
 
-
-  

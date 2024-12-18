@@ -10,58 +10,91 @@
 
 </head>
 
-<body class="w-full h-screen flex flex-col bg-zinc-900 overflow-hidden">
+<body class="w-screen h-screen flex flex-col bg-zinc-900 overflow-hidden">
 
-    <div class="w-full h-full flex justify-between rounded-md  flex-col">
-        <div class="w-full h-[40%] flex justify-center border-2 border-white items-center bg-black rounded-[20px] profile-image">
+    <div class="w-full h-screen flex justify-between rounded-md  flex-col">
+        <div
+            class="w-screen h-[40%] flex justify-center border-2 border-white items-center bg-black rounded-[20px] profile-image">
             <h1 class="profile-title text-white text-8xl font-bold font-serif">Profile</h1>
-          </div>
-          
-        <div class="w-full h-[60%]">
-            <div class="w-full h-full p-10 bg-zinc-900">
-                <a href="/" class="absolute top-[3%] left-[3%] font-bold text-white text-2xl bg-transparent"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg></a>
-                <img src="<%= user.avatar %>" 
-                alt="Avatar" 
-                class="absolute top-[25%] left-[10%] h-[30%] border-4 border-black-500 rounded-full shadow-[0_0_10px_black]">
-                <div class="flex  gap-8 w-[40%] absolute top-[34%] left-[60%]">
-                    <p class="text-white text-2xl font-bold font-cursive">
-                      <span class="text-green-500 text-4xl leading-none align-top">V</span><span class="text-green-500 text-2xl">ICTOR</span><span class="text-green-500 text-4xl leading-none align-top">Y</span> - <%= user.vicitory %>
-                    </p>
-                    <p class="text-white text-2xl font-bold font-cursive">
-                      <span class="text-red-500 text-4xl leading-none align-top">D</span><span class="text-red-500 text-2xl">EFEA</span><span class="text-red-500 text-4xl leading-none align-top">T</span>- <%= user.defeat %>
-                    </p>
-                    <p class="text-white text-2xl font-bold font-cursive">
-                      <span class="text-yellow-500 text-4xl leading-none align-top">D</span><span class="text-yellow-500 text-2xl">RAW</span><span class="text-yellow-500 text-4xl leading-none align-top">S</span>- <%= user.draw %>
-                    </p>
-                  </div>
-                  
-                  <div class="w-full h-full flex flex-col justify-center items-center gap-6 bg-zinc-900 p-8 shadow-lg">
-                    <div class="flex flex-col gap-4 text-white text-lg font-bold">
-                        <label class="flex items-center">
-                            <span class="text-yellow-400 w-28">Name:</span>
-                            <span class="text-white text-xl"><%= user.name %></span>
-                        </label>
-                        <label class="flex items-center">
-                            <span class="text-yellow-400 w-28">Username:</span>
-                            <span class="text-white text-xl"><%= user.username %></span>
-                        </label>
-                        <label class="flex items-center">
-                            <span class="text-yellow-400 w-28">Email:</span>
-                            <span class="text-white text-xl"><%= user.email %></span>
-                        </label>
-                        <label class="flex items-center">
-                            <span class="text-yellow-400 w-28">Gender:</span>
-                            <span class="text-white text-xl"><%= user.gender %></span>
-                        </label>
-                    </div>
-                    <a href="/logout" class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-full shadow-md transition-transform transform hover:scale-105" >
-                        Logout
-                    </a>
+        </div>
+        <div class="w-full h-full ">
+
+            <!-- Back Button -->
+            <a href="/" class="absolute top-[3%] left-[3%] font-bold text-white text-2xl bg-transparent">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                    <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
+                </svg>
+            </a>
+        
+            <!-- Profile Image -->
+            <img src="<%= user.avatar %>" 
+                 alt="Avatar" 
+                 class="absolute 
+                        top-[20%] left-[10%] 
+                        border-4 border-black-500 rounded-full shadow-[0_0_10px_black] 
+                        h-[25%] w-[54%] 
+                        md:top-[18%] md:h-[30%] md:w-[30%] 
+                        lg:top-[20%] lg:h-[30%] lg:w-[20%]">
+        
+            <!-- Score Board -->
+            <div class="score-board 
+                        flex flex-row gap-2 w-full md:flex-row md:w-[40%] 
+                        absolute top-[90%] md:top-[34%] md:left-[60%] md:right-[10%] 
+                        mt-4 md:mt-0 
+                        items-center md:items-start">
+                <p class="text-white text-2xl font-bold font-cursive">
+                    <span class="text-green-500 text-4xl leading-none align-top">V</span><span
+                        class="text-green-500 text-2xl">ICTOR</span><span
+                        class="text-green-500 text-4xl leading-none align-top">Y</span> - <%= user.vicitory %>
+                </p>
+                <p class="text-white text-2xl font-bold font-cursive">
+                    <span class="text-red-500 text-4xl leading-none align-top">D</span><span
+                        class="text-red-500 text-2xl">EFEA</span><span
+                        class="text-red-500 text-4xl leading-none align-top">T</span>- <%= user.defeat %>
+                </p>
+                <p class="text-white text-2xl font-bold font-cursive">
+                    <span class="text-yellow-500 text-4xl leading-none align-top">D</span><span
+                        class="text-yellow-500 text-2xl">RAW</span><span
+                        class="text-yellow-500 text-4xl leading-none align-top">S</span>- <%= user.draw %>
+                </p>
+            </div>
+        
+            <!-- User Information -->
+            <div class="w-full h-full flex flex-col justify-center items-center gap-6 bg-zinc-900 p-8 shadow-lg  md:mt-0">
+                <div class="flex flex-col gap-4 text-white text-lg font-bold">
+                    <label class="flex items-center">
+                        <span class="text-yellow-400 w-28">Name:</span>
+                        <span class="text-white text-xl">
+                            <%= user.name %>
+                        </span>
+                    </label>
+                    <label class="flex items-center">
+                        <span class="text-yellow-400 w-28">Username:</span>
+                        <span class="text-white text-xl">
+                            <%= user.username %>
+                        </span>
+                    </label>
+                    <label class="flex items-center">
+                        <span class="text-yellow-400 w-28">Email:</span>
+                        <span class="text-white text-xl">
+                            <%= user.email %>
+                        </span>
+                    </label>
+                    <label class="flex items-center">
+                        <span class="text-yellow-400 w-28">Gender:</span>
+                        <span class="text-white text-xl">
+                            <%= user.gender %>
+                        </span>
+                    </label>
                 </div>
-                
+                <a href="/logout"
+                    class="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-6 rounded-full shadow-md transition-transform transform hover:scale-105">
+                    Logout
+                </a>
             </div>
         </div>
-    </div>  
+        
+    </div>
 
 
     <!-- Scripts -->

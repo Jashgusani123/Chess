@@ -35,6 +35,7 @@ btn.addEventListener("click", function (e) {
 
   const chess = new Chess(); // Initialize chess.js
   const boardElement = document.querySelector(".chessboard");
+  const chessandchat = document.querySelector(".chessandchat");
   const first_container = document.querySelector(".first_container");
   let draggedPiece = null;
   let sourceSquare = null;
@@ -46,6 +47,7 @@ btn.addEventListener("click", function (e) {
     first_container.style.display = "none";
     boardElement.style.display = "grid";
     chess_chat.style.display = "flex";
+    chessandchat.style.display = "flex";
     chess_container.style.display = "flex";
     document.querySelector("body").classList.add("body");
 

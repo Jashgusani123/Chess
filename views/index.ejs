@@ -10,50 +10,86 @@
 
 </head>
 
-<body class="w-full h-screen flex flex-col bg-zinc-900 overflow-hidden">
+<body class="w-screen h-screen flex flex-col bg-zinc-900 lg:overflow-hidden  ">
     <!-- Header -->
     <header class="hearder">
-        <nav class="flex justify-between items-center w-full h-full">
-            <div class="logo h-full w-1/4 flex justify-center items-center ">
-                <img src="/images/Logopng.webp" class="h-[93%] w-[30%]" alt=""> <span class="text-white text-4xl ">Chess</span>
+        <nav class="flex justify-start flex-wrap flex-col w-full h-full">
+            <div class="logo h-full  flex justify-start items-center ">
+                <img src="/images/Logopng.webp" class="h-[93%] lg:w-[30%] md:w-[50%]" alt=""> <span
+                    class="text-white text-4xl ">Chess</span>
             </div>
-            <div class="options h-full w-1/3 flex justify-center items-center gap-6 text-2xl text-white">
+            <div class="options h-full flex justify-end items-center md:flex hidden  gap-6 text-2xl text-white">
                 <a href="">Home</a>
                 <a href="/profile">Profile</a>
                 <a href="/mygames">MyGames</a>
                 <a href="/notifications">Notifications</a>
             </div>
+            <!-- Hamburger Menu for Mobile -->
+            <div class="md:hidden flex items-center h-full justify-end p-4">
+                <button class="text-white text-3xl" id="hamburger-menu">
+                    &#9776;
+                </button>
+            </div>
+
         </nav>
+        <div id="mobile-menu"
+            class="transition-transform duration-500 ease-in-out absolute top-[15%] left-[-100%] flex flex-col bg-zinc-800 w-full text-white items-center justify-center  md:hidden hidden">
+            <a href="/" class="p-4">Home</a>
+            <a href="/profile" class="p-4">Profile</a>
+            <a href="/mygames" class="p-4">MyGames</a>
+            <a href="/notifications" class="p-4">Notifications</a>
+        </div>
     </header>
 
     <!-- Main Content -->
-    <div class="flex-grow flex items-center justify-start overflow-hidden">
-        <div class="first_container w-full h-full flex justify-between gap-8 p-6" >
-            <div class="image w-[100%] h-full" >
+    <div class="flex-grow flex items-center justify-start lg:overflow-hidden flex-col flex-wrap">
+        <div class="first_container w-full h-full flex md:flex-row flex-col justify-between gap-8 p-6">
+            <div class="image w-[100%] h-full">
                 <img src="/images/backimage.webp" alt="Chess Image.." class="h-full w-full">
             </div>
             <div class="description flex justify-center items-center gap-2 flex-col">
                 <h1 class="font-bold text-4xl text-white mb-4">Chess History.</h1>
-                <p class="text-xl text-white "><span class="text-2xl font-bold ml-8">Chess</span>, originating in India over <span class="text-2xl font-bold">1,500 years</span> ago as <span class="text-2xl font-bold">"Chaturanga,"</span> evolved through Persia and Europe to become the modern game we know today. Celebrated as a strategic and intellectual pursuit, it unites millions worldwide. Dive into this timeless battle of wits—click <span class="text-2xl font-bold">Play to begin your journey!</span></p>
-                <button class="btn bg-green-600 text-white p-2 w-1/6 flex justify-center text-2xl rounded-md ">Play Game </button>
+                <p class="text-xl text-white "><span class="text-2xl font-bold ml-8">Chess</span>, originating in India
+                    over <span class="text-2xl font-bold">1,500 years</span> ago as <span
+                        class="text-2xl font-bold">"Chaturanga,"</span> evolved through Persia and Europe to become the
+                    modern game we know today. Celebrated as a strategic and intellectual pursuit, it unites millions
+                    worldwide. Dive into this timeless battle of wits—click <span class="text-2xl font-bold">Play to
+                        begin your journey!</span></p>
+                <button
+                    class="btn bg-green-600 text-white p-2 w-[40%] lg:w-1/4 flex justify-center text-2xl rounded-md ">Play
+                    Game </button>
             </div>
         </div>
-        <div class="chess_container w-[60%] h-full hidden justify-center bg-zinc-800 border-4 border-black-500 rounded-md items-center p-10">
-            <div class="chessboard bg-red-800"></div>
-        </div>
-        <div class="chess_chat w-[40%] h-full hidden flex-col justify-center items-center bg-black border-4 border-black-500 rounded-md">
-            <div class="chat_container w-full h-full bg-black rounded-md p-2 flex flex-col justify-between gap-2">
-                <img src="https://imgs.search.brave.com/sLCJKhO4Vuh04fRr1cDGzLrPTALNuNV2FBfrm0LgDCg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5nbWFydC5jb20v/ZmlsZXMvMTEvUGVv/cGxlLUNoYXQtUE5H/LUZpbGUucG5n" alt="" class="w-full h-[80%] chat_image ">
-                <div class="chat_box h-[80%] hidden w-full bg-zinc-900 rounded-md p-2 flex flex-col ">
-                </div>
-                <div class="input_fileds flex justify-between items-center h-[20%]">
+        <div class="chessandchat hidden flex-col md:flex-row h-full w-full">
 
-                    <input type="text" class="w-[90%] text-white h-[85%] bg-zinc-900 rounded-md p-2" placeholder="Enter your message here..." name="message">
-                    <button class="send_btn bg-zinc-900 h-[44%] rounded-full text-white p-2 flex justify-center text-2xl rounded-md " ><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z"/></svg></button>
+            <div
+                class="chess_container w-full md:w-[60%] h-full hidden justify-center bg-zinc-800 border-4 border-black-500 rounded-md items-center p-10">
+                <div class="chessboard bg-red-800"></div>
+            </div>
+            <div
+                class="chess_chat w-full md:w-[40%] h-full hidden flex-col justify-center items-center bg-black border-4 border-black-500 rounded-md">
+                <div class="chat_container w-full h-full bg-black rounded-md p-2 flex flex-col justify-between gap-2">
+                    <img src="https://imgs.search.brave.com/sLCJKhO4Vuh04fRr1cDGzLrPTALNuNV2FBfrm0LgDCg/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5nbWFydC5jb20v/ZmlsZXMvMTEvUGVv/cGxlLUNoYXQtUE5H/LUZpbGUucG5n"
+                        alt="" class="w-full h-[80%] chat_image ">
+                    <div class="chat_box h-[80%] hidden w-full bg-zinc-900 rounded-md p-2 flex flex-col ">
+                    </div>
+                    <div class="input_fileds flex justify-between items-center h-[20%]">
+
+                        <input type="text" class="w-[90%] text-white h-[85%] bg-zinc-900 rounded-md p-2"
+                            placeholder="Enter your message here..." name="message">
+                        <button
+                            class="send_btn bg-zinc-900 h-[44%] rounded-full text-white p-2 flex justify-center text-2xl rounded-md "><svg
+                                xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                                fill="#e8eaed">
+                                <path
+                                    d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
+                            </svg></button>
+                    </div>
                 </div>
             </div>
         </div>
-        </div>
+
+    </div>
     </div>
 
     <!-- Scripts -->
@@ -63,6 +99,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
         integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        document.getElementById("hamburger-menu").addEventListener("click", function () {
+            var menu = document.getElementById("mobile-menu");
+            menu.classList.toggle("hidden");
+            menu.classList.toggle("left-[-100%]"); // Position off-screen
+            menu.classList.toggle("left-0");
+        });
+        document.addEventListener("click", function (e) {
+            if (e.target.id !== "hamburger-menu" && e.target.id !== "mobile-menu") {
+                var menu = document.getElementById("mobile-menu");
+
+                menu.classList.add("hidden");
+            }
+        })
+    </script>
     <script type="module" src="/javascript/ChessGame.js"></script>
 </body>
 

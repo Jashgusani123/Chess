@@ -7,28 +7,44 @@
     <title>Chess - Login / Create Account</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="/stylesheet/style.css">
-
 </head>
 
 <body class="w-full h-screen flex items-center justify-center bg-zinc-800 overflow-hidden">
-    <div class="login_containerw-[80%] max-w-[1200px] h-[90%] bg-zinc-900 rounded-lg shadow-lg overflow-hidden flex">
-        <div class="con bg-zinc-900 w-full h-full flex flex-row">
-            <form action="/loggedin" method="post" class=" w-[60%] h-full flex gap-8 p-8 flex-col ">
-                <div class="img w-full h-[20%] flex items-center">
-                    <img src="/images/Logopng.webp" class="h-[100%] w-[25%]" alt=""><span class="text-white"><span class="text-white text-4xl font-bold">Welcome Back to Chess</span><p>Login</p> </span>
+    <div class="login_container w-[90%] max-w-[1200px] h-[90%] bg-zinc-900 rounded-lg shadow-lg overflow-hidden flex flex-col md:flex-row ">
+        <!-- Login Form Section -->
+        <div class="w-full md:w-[60%] h-full flex flex-col p-6 md:p-8 gap-6 justify-center">
+            <div class="flex items-center gap-4">
+                <img src="/images/Logopng.webp" class="h-[50px] w-[50px] md:h-[80px] md:w-[80px]" alt="Logo">
+                <div>
+                    <h1 class="text-white text-2xl md:text-4xl font-bold">Welcome Back to Chess</h1>
+                    <p class="text-white text-sm md:text-base">Login</p>
                 </div>
-                <div class="fields h-[50%] flex justify-between items-center flex-col gap-8">
-                    <input type="email" class=" bg-transparent border-solid border-2 border-white-500 rounded-md w-96 px-2 py-4 item-center text-white" placeholder="Email" name="email">
-                    <input type="password" class="bg-transparent border-solid border-2 border-white-500 rounded-md w-96 px-2 py-4 item-center text-white" placeholder="Password" name="password">
-                    <button class="bg-green-600 w-40 text-white text-2xl h-full rounded-md p-4" type="submit">Login</button>
-                    <a href="/signup" class="text-white">Create new Account - <span class="text-[lightgreen]">SignUp</span></a>
-                </div>
-            </form>
-            <div class="image w-[40%] h-full">
-                <img src="/images/backimage.webp" class="h-full w-full" alt="">
             </div>
+            <form action="/loggedin" method="post" class="flex flex-col gap-4 mt-10">
+                <input type="email" 
+                       class="bg-transparent border border-gray-500 rounded-md px-4 py-3 text-white w-full md:w-96" 
+                       placeholder="Email" name="email">
+                <input type="password" 
+                       class="bg-transparent border border-gray-500 rounded-md px-4 py-3 text-white w-full md:w-96" 
+                       placeholder="Password" name="password">
+                <button 
+                       class="bg-green-600 hover:bg-green-500 text-white text-lg md:text-xl font-bold py-3 rounded-md transition duration-200 w-full md:w-40">
+                    Login
+                </button>
+                <a href="/signup" class="text-white text-sm md:text-base">
+                    Create new Account - <span class="text-green-400">SignUp</span>
+                </a>
+            </form>
+        </div>
+        
+        <!-- Image Section -->
+        <div class="w-full md:w-[40%] h-[200px] md:h-full">
+            <img src="/images/backimage.webp" 
+                 class="h-full w-full object-cover md:rounded-r-lg" 
+                 alt="Background Image">
         </div>
     </div>
+
     <!-- Scripts -->
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
         integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
