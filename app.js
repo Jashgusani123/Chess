@@ -13,8 +13,10 @@ const cookieSender = require("./util/CookieSender.js");
 const convertPassword = require("./util/ConvertPass.js");
 const bcrypt = require("bcrypt");
 const Game = require("./Models/GameMoveModel.js");
+const dotenv = require("dotenv");
+dotenv.config();
+const PORT = process.env.PORT;
 
-require("dotenv").config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
@@ -36,7 +38,6 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
-
 app.get("/", isLoggedin, (req, res) => {
   if (req.isLoggedIn) {
     res.render("index");
@@ -130,12 +131,10 @@ app.get("/profile", isLoggedin, async (req, res) => {
   })
   res.render("Profile", { user });
 });
-
 app.get("/logout", (req, res) => {
   res.cookie("Token", "", { maxAge: 0 });
   res.redirect("/login");
 });
-
 app.get("/game/:id", isLoggedin, async (req, res) => {
   try {
     // Get the game ID from the request parameters
@@ -177,13 +176,11 @@ app.get("/game/:id", isLoggedin, async (req, res) => {
       .json({ message: "An error occurred while adding the game" });
   }
 });
-
-
 app.get("/mygames", isLoggedin, async (req, res) => {
   const user = await User.findById(req.user._id);
   
   res.render("mygames", {games : user.games} );
-})
+});
 app.get("/watch/:gameId", async (req, res) => {
   try {
     res.render("watch");
@@ -231,10 +228,6 @@ io.on("connection", function (socket) {
     socket.emit("spectatorRole");
   }
 
-  // Helper function to check if the move is valid
-  function isValidMove(move, color) {
-    return chess.turn() === color && chess.move(move);
-  }
 
   socket.on("move", function (move) {
     try {
@@ -327,6 +320,6 @@ io.on("connection", function (socket) {
   });
 });
 
-server.listen(3000, () => {
-  console.log("Server started on port 3000 👍🏼");
+server.listen(PORT, () => {
+  console.log(`Server started on port ${PORT} 👍🏼`);
 });
