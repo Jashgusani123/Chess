@@ -83,14 +83,17 @@
                                 fill="#e8eaed">
                                 <path
                                     d="M120-160v-640l760 320-760 320Zm80-120 474-200-474-200v140l240 60-240 60v140Zm0 0v-400 400Z" />
-                            </svg></button>
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-    </div>
-    </div>
+
+    
+
 
     <!-- Scripts -->
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
@@ -103,7 +106,7 @@
         document.getElementById("hamburger-menu").addEventListener("click", function () {
             var menu = document.getElementById("mobile-menu");
             menu.classList.toggle("hidden");
-            menu.classList.toggle("left-[-100%]"); // Position off-screen
+            menu.classList.toggle("left-[-100%]"); 
             menu.classList.toggle("left-0");
         });
         document.addEventListener("click", function (e) {
