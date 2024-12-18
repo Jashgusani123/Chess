@@ -62,8 +62,6 @@ app.post("/loggedin", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    console.log(user);
-
     if (!user) {
       return res.status(404).send("User not found!"); // Create a 404 NotFound page
     }
@@ -298,7 +296,6 @@ io.on("connection", function (socket) {
 
     try {
       await game.save(); // Save the game document
-      console.log(`${winner} wins the game!` , socket.id);
 
       if(loser === players.white){
         io.to(players.white).emit("sendRecording", game._id ,"loser");
