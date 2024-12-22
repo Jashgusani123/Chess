@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chess</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/stylesheet/style.css">
+</head>
+
+<body class="w-full h-screen flex flex-col bg-zinc-900 overflow-hidden">
+
+    <!-- Main Content -->
+    <div class="flex-grow flex items-center justify-start overflow-hidden">
+        <a href="/" class="absolute top-[3%] left-[3%] font-bold text-white text-2xl bg-transparent">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" />
+            </svg>
+        </a>
+        <div class="w-full h-full flex flex-col items-center justify-center">
+            <h1 class="text-white text-4xl font-bold font-serif">Notifications</h1>
+            <div class="w-full h-full flex flex-col gap-4 p-8"> 
+                <% if(notifications.length == 0) { %>
+                    <h1 class="text-white text-4xl font-bold font-serif">No Notifications</h1>
+                <% } else { %>
+                <% notifications.forEach(notification => { %>
+                <div class="flex items-center justify-between gap-4 p-8 bg-zinc-800 rounded-lg text-white">
+                    <div class="inneritems flex items-center justify-start gap-4">
+                        <img src="<%= notification.avatar %>" alt="" class="w-16 h-16 rounded-full">
+                        <p class="text-xl font-bold"><%= notification.username %></p>
+                    </div>
+                    <div class="outeritems">
+                        <button class="Accept_btn text-white p-2 rounded-lg bg-green-500">Accept</button>
+                        <button class="Reject_btn text-white p-2 rounded-lg bg-red-500">Reject</button>
+                    </div>
+                </div>
+                <% }) %>
+                <% } %>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"
+        integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
+        integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module" src="/javascript/ChessGame.js"></script>
+</body>
+
+</html>

@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
     vicitory: { type: Number, required: true },
     defeat: { type: Number, required: true },
     draw: { type: Number, required: true },
-
+    friends: { type: Array, default: [] },
   },
   { timestamps: true }
 );

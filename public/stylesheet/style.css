@@ -77,7 +77,12 @@ nav {
 .flipped .piece {
     transform: rotate(180deg);
 }
-
+.offcanvas-body {
+    padding-bottom: 70px; /* Adjust based on the height of the footer */
+}
+.notification_count{
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
 /* Mobile responsiveness */
 @media screen and (max-width: 768px) {
     .chessboard {
@@ -85,6 +90,10 @@ nav {
         height: 300px;
     }
 
+    .slied_btn {
+        left: 4.5% !important;
+    }
+    
     .square {
         width: 40px;
         height: 40px;
