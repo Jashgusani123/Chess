@@ -16,7 +16,6 @@ const username = document.querySelector(".username");
 const go_to_game = document.querySelector(".go_to_game");
 const socket = io();
 socket.emit("setUsername", username?.innerText);
-console.log(process.env.BASE_URL);
 offcanvas_body?.addEventListener("click", async function (e) {
   if (
     e.target &&
