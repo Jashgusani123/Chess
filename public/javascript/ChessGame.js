@@ -16,7 +16,7 @@ const username = document.querySelector(".username");
 const go_to_game = document.querySelector(".go_to_game");
 const socket = io();
 socket.emit("setUsername", username?.innerText);
-
+console.log(process.env.BASE_URL);
 offcanvas_body?.addEventListener("click", async function (e) {
   if (
     e.target &&
@@ -30,7 +30,7 @@ offcanvas_body?.addEventListener("click", async function (e) {
             .innerText
         : e.srcElement.parentElement.parentElement.innerText;
     const notificationcreate = await fetch(
-      `${process.env.BASE_URL}/notificationcreate`,
+      `https://chess-t0e4.onrender.com/notificationcreate`,
       {
         method: "POST",
         body: JSON.stringify({ username: friend_username }),
@@ -418,7 +418,7 @@ socket?.on("InviteAccepted", function (me) {
 search_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
   const response = await fetch(
-    `${process.env.BASE_URL}/search?search=${search_input.value}`
+    `https://chess-t0e4.onrender.com/search?search=${search_input.value}`
   );
   const data = await response.json();
   console.log(data);
@@ -478,7 +478,7 @@ search_btn?.addEventListener("click", async function (e) {
 Accept_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
   console.log(e.target.parentElement.parentElement.children[0].innerText);
-  const notification = await fetch(`${process.env.BASE_URL}/notificationaccept`, {
+  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationaccept`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -494,7 +494,7 @@ Accept_btn?.addEventListener("click", async function (e) {
 
 Reject_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`${process.env.BASE_URL}/notificationreject`, {
+  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationreject`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
