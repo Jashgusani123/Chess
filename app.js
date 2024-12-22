@@ -374,7 +374,6 @@ io.on("connection", function (socket) {
       socket.emit("spectatorRole");
     }
 
-    console.log(players);
     
     socket.on("move", function (move) {
       try {

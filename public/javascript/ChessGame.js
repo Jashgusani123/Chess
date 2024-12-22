@@ -15,7 +15,6 @@ const addfriend = document.querySelector(".addfriend");
 const username = document.querySelector(".username");
 const go_to_game = document.querySelector(".go_to_game");
 const socket = io();
-console.log();
 socket.emit("setUsername", username?.innerText);
 
 offcanvas_body?.addEventListener("click", async function (e) {
@@ -241,7 +240,6 @@ socket?.on("Invite", function (sender) {
   }
 })
 socket?.on("InviteAccepted", function (me) {
-  console.log( username?.innerText, me);
   socket.emit("gamestart", me , username?.innerText );
   socket.on("comenewmessage", function (senderId, message) {
     chat_box.style.display = "flex";
