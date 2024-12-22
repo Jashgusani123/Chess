@@ -32,7 +32,7 @@
     
         const fetchGameMoves = async () => {
             try {
-                const response = await fetch('http://localhost:3000/getrecording');  
+                const response = await fetch(`${process.env.BASE_URL}/getrecording`);  
                 const data = await response.json();
                 gameMoves = data.moves;  
                 renderBoard();  
