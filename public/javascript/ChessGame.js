@@ -28,7 +28,7 @@ offcanvas_body?.addEventListener("click", async function (e) {
             .innerText
         : e.srcElement.parentElement.parentElement.innerText;
       const notificationcreate = await fetch(
-      `http://localhost:3000/notificationcreate`,
+      `https://chess-t0e4.onrender.com/notificationcreate`,
       {
         method: "POST",
         body: JSON.stringify({ username: friend_username }),
@@ -414,7 +414,7 @@ socket?.on("InviteAccepted", function (me) {
 search_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
   const response = await fetch(
-    `http://localhost:3000/search`,
+    `https://chess-t0e4.onrender.com/search`,
     {
       method: "POST",
       body: JSON.stringify({ username: search_input.value }),
@@ -478,7 +478,7 @@ search_btn?.addEventListener("click", async function (e) {
 
 Accept_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`http://localhost:3000/notificationaccept`, {
+  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationaccept`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -493,7 +493,7 @@ Accept_btn?.addEventListener("click", async function (e) {
 
 Reject_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`http://localhost:3000/notificationreject`, {
+  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationreject`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
