@@ -302,7 +302,7 @@ app.post("/notificationaccept", isLoggedin, async (req, res) => {
   // Delete the notification
   await notification.deleteOne(); // Correct method to delete a single document
 
-  res.status(200).send("Notification accepted and processed");
+  res.redirect("/");
 });
 app.post("/notificationreject", isLoggedin, async (req, res) => {
   const { senderusername } = req.body;
@@ -322,6 +322,7 @@ app.post("/notificationreject", isLoggedin, async (req, res) => {
 
   res.json({ success: true, message: "Notification Rejected" });
 });
+
 let userSocketMap = {}; // Object to store username and socket ID
 
 io.on("connection", function (socket) {
@@ -338,13 +339,14 @@ io.on("connection", function (socket) {
   });
 
   socket.on("getSocketId", (username, callback) => {
-    // Log the current userSocketMap to check its contents
-    // If the username exists in the userSocketMap object
     if (userSocketMap[username]) {
-      callback(null, userSocketMap[username]); // Return the socket ID for the username
+      callback(null, userSocketMap[username]);
     } else {
-      callback("User not found", null); // User not found
+      callback("User not found", null);
     }
+  });
+  socket.on("notificationcreate", function (username) {
+    io.to(userSocketMap[username]).emit("comingnotification");
   });
   socket.on("Invite", function (sender , who) {
     io.to(userSocketMap[who]).emit("Invite",  sender);

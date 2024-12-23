@@ -16,6 +16,7 @@ const username = document.querySelector(".username");
 const go_to_game = document.querySelector(".go_to_game");
 const socket = io();
 socket.emit("setUsername", username?.innerText);
+
 offcanvas_body?.addEventListener("click", async function (e) {
   if (
     e.target &&
@@ -38,13 +39,16 @@ offcanvas_body?.addEventListener("click", async function (e) {
       }
     );
     if (notificationcreate) {
-      console.log("notification created");
+      alert("Notification Sent");
+      socket.emit("notificationcreate", friend_username);
     } else {
-      console.log("notification not created");
+      alert("Notification Not Sent");
     }
   }
 });
-
+socket.on("comingnotification", async function () {
+  alert("Notification Received !!");
+});
 function AddFriend(e){
   e.preventDefault();
   socket.emit("Invite", username?.innerText , e.target.parentElement.parentElement.children[0].innerText);
@@ -472,6 +476,8 @@ search_btn?.addEventListener("click", async function (e) {
     button.addEventListener("click", AddFriend);
     friend_list_item.appendChild(button);
     offcanvas_body.appendChild(friend_list_item);
+  }else{
+    alert("No user found...");
   }
   search_input.value = "";
 });
@@ -488,7 +494,8 @@ Accept_btn?.addEventListener("click", async function (e) {
       "Content-Type": "application/json",
     },
   });
-  const data = await notification.json();
+  await notification.json();
+
 });
 
 Reject_btn?.addEventListener("click", async function (e) {
