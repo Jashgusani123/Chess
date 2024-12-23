@@ -496,7 +496,7 @@ Accept_btn?.addEventListener("click", async function (e) {
   });
   await notification.json();
   if(notification.status === 200){
-    window.location.href = "/notifications";
+    window.location.href = "/";
     alert("Notification Accepted");
   }else{
     window.location.href = "/";
