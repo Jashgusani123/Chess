@@ -302,7 +302,7 @@ app.post("/notificationaccept", isLoggedin, async (req, res) => {
   // Delete the notification
   await notification.deleteOne(); // Correct method to delete a single document
 
-  res.redirect("/");
+  res.status(200).send("Notification accepted and processed");
 });
 app.post("/notificationreject", isLoggedin, async (req, res) => {
   const { senderusername } = req.body;

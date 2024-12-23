@@ -495,7 +495,13 @@ Accept_btn?.addEventListener("click", async function (e) {
     },
   });
   await notification.json();
-
+  if(notification.status === 200){
+    window.location.href = "/notifications";
+    alert("Notification Accepted");
+  }else{
+    window.location.href = "/";
+    alert("Notification Not Accepted");
+  }
 });
 
 Reject_btn?.addEventListener("click", async function (e) {
