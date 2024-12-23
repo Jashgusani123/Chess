@@ -225,15 +225,18 @@ app.get("/delete/:gameId", isLoggedin, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-app.get("/search", isLoggedin, async (req, res) => {
-  const search = req.query.search;
+app.post("/search", isLoggedin, async (req, res) => {
+  const {username} = req.body;
   const me = await User.findById(req.user._id);
-  if (me.username === search) {
+  if (me.username === username) {
     return res.json({ success: false, message: "You cannot search yourself" });
   }
-  const users = await User.find({ username: search }).select(
+  const users = await User.find({ username: username }).select(
     "_id username avatar"
   );
+  if(users.length === 0){
+    return res.json({ success: false, message: "No user found" });
+  }
   if (me.friends.includes(users[0]._id.toString())) {
     return res.json({ type: "friend", users });
   }
@@ -277,7 +280,6 @@ app.post("/notificationaccept", isLoggedin, async (req, res) => {
   const user = await User.findOne({ username: senderusername });
 
   if (!user) {
-    console.log("User not found");
     return res.status(404).send("User not found");
   }
 
@@ -288,7 +290,6 @@ app.post("/notificationaccept", isLoggedin, async (req, res) => {
   });
 
   if (!notification) {
-    console.log("Notification not found");
     return res.status(404).send("Notification not found");
   }
   const me = await User.findById(req.user._id);
@@ -310,7 +311,6 @@ app.post("/notificationreject", isLoggedin, async (req, res) => {
   const user = await User.findOne({ username: senderusername });
 
   if (!user) {
-    console.log("User not found");
     return res.status(404).send("User not found");
   }
 
@@ -339,7 +339,6 @@ io.on("connection", function (socket) {
 
   socket.on("getSocketId", (username, callback) => {
     // Log the current userSocketMap to check its contents
-    console.log(userSocketMap[username]);
     // If the username exists in the userSocketMap object
     if (userSocketMap[username]) {
       callback(null, userSocketMap[username]); // Return the socket ID for the username
@@ -352,12 +351,10 @@ io.on("connection", function (socket) {
   });
  
   socket.on("InviteAccepted", function (sender,me) {
-    console.log(sender);
     io.to(userSocketMap[sender]).emit("InviteAccepted", me);
   });
 
   socket.on("gamestart", function (username, opponent) {
-    console.log(username , opponent);
     let game = null; // To store the game document
     let me = userSocketMap[username];
     let opponentt = userSocketMap[opponent];
@@ -407,17 +404,14 @@ io.on("connection", function (socket) {
           io.emit("move", move);
           io.emit("boardState", chess.fen());
         } else {
-          console.log("Invalid Move:", move);
           socket.emit("InvalidMove", move);
         }
       } catch (err) {
-        console.log(err);
         socket.emit("Invalid Move:", move);
       }
     });
 
     socket.on("gameOver", async ({ winner }) => {
-      console.log("Game Over. Winner:", winner);
 
       // Identify the loser based on the turn
       const loser = chess.turn() === "b" ? players.black : players.white;

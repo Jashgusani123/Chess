@@ -19,8 +19,7 @@ socket.emit("setUsername", username?.innerText);
 offcanvas_body?.addEventListener("click", async function (e) {
   if (
     e.target &&
-    e.target.parentElement.classList.value === "btn_friend" &&
-    e.target.localName === "path"
+    e.target.parentElement.parentElement.classList.value === "btn_friend"
   ) {
     e.preventDefault();
     const friend_username =
@@ -28,8 +27,8 @@ offcanvas_body?.addEventListener("click", async function (e) {
         ? e.srcElement.farthestViewportElement.parentElement.parentElement
             .innerText
         : e.srcElement.parentElement.parentElement.innerText;
-    const notificationcreate = await fetch(
-      `https://chess-t0e4.onrender.com/notificationcreate`,
+      const notificationcreate = await fetch(
+      `http://localhost:3000/notificationcreate`,
       {
         method: "POST",
         body: JSON.stringify({ username: friend_username }),
@@ -43,7 +42,7 @@ offcanvas_body?.addEventListener("click", async function (e) {
     } else {
       console.log("notification not created");
     }
-  } 
+  }
 });
 
 function AddFriend(e){
@@ -204,7 +203,6 @@ socket?.on("Invite", function (sender) {
     };
   
     socket.on("playerRole", (role) => {
-      console.log(role);
       playerRole = role;
       renderBoard();
     });
@@ -383,7 +381,6 @@ socket?.on("InviteAccepted", function (me) {
   };
 
   socket.on("playerRole", (role) => {
-    console.log(role);
     playerRole = role;
     renderBoard();
   });
@@ -417,10 +414,16 @@ socket?.on("InviteAccepted", function (me) {
 search_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
   const response = await fetch(
-    `https://chess-t0e4.onrender.com/search?search=${search_input.value}`
+    `http://localhost:3000/search`,
+    {
+      method: "POST",
+      body: JSON.stringify({ username: search_input.value }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
   );
   const data = await response.json();
-  console.log(data);
   search_input.value = "Searching...";
   if (data.success) {
     const user = data.users[0];
@@ -446,7 +449,6 @@ search_btn?.addEventListener("click", async function (e) {
     friend_list_item.appendChild(button);
     offcanvas_body.appendChild(friend_list_item);
   } else if (data.type === "friend") {
-    console.log("friend");
     const user = data.users[0];
     const friend_list_item = document.createElement("div");
     friend_list_item.style.display = "flex";
@@ -476,8 +478,7 @@ search_btn?.addEventListener("click", async function (e) {
 
 Accept_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  console.log(e.target.parentElement.parentElement.children[0].innerText);
-  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationaccept`, {
+  const notification = await fetch(`http://localhost:3000/notificationaccept`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -488,12 +489,11 @@ Accept_btn?.addEventListener("click", async function (e) {
     },
   });
   const data = await notification.json();
-  console.log(data);
 });
 
 Reject_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationreject`, {
+  const notification = await fetch(`http://localhost:3000/notificationreject`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -516,7 +516,6 @@ send_btn?.addEventListener("click", function (e) {
 
 btn?.addEventListener("click", function (e) {
   // Disable button to prevent multiple initializations
-  console.log("clicked");
   e.preventDefault();
   btn.disabled = true;
   // Emit the userId to the server after connecting
@@ -664,7 +663,6 @@ btn?.addEventListener("click", function (e) {
   };
 
   socket.on("playerRole", (role) => {
-    console.log(role);
     playerRole = role;
     renderBoard();
   });
