@@ -83,6 +83,34 @@ nav {
 .notification_count{
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
+
+.dots-animation {
+    display: inline-block;
+    width: 2em;
+    text-align: left;
+}
+
+.dots-animation::after {
+    content: ''; /* Initial content */
+    display: inline-block;
+    animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+    0% {
+        content: '';
+    }
+    33% {
+        content: '.';
+    }
+    66% {
+        content: '. .';
+    }
+    100% {
+        content: '. . .';
+    }
+}
+
 /* Mobile responsiveness */
 @media screen and (max-width: 768px) {
     .chessboard {

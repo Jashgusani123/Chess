@@ -14,9 +14,12 @@ const Reject_btn = document.querySelector(".Reject_btn");
 const addfriend = document.querySelector(".addfriend");
 const username = document.querySelector(".username");
 const go_to_game = document.querySelector(".go_to_game");
+const waiting_box = document.querySelector(".waiting-box");
+const home = document.querySelector(".content-home");
 const socket = io();
 socket.emit("setUsername", username?.innerText);
 
+// Add Friend
 offcanvas_body?.addEventListener("click", async function (e) {
   if (
     e.target &&
@@ -28,8 +31,8 @@ offcanvas_body?.addEventListener("click", async function (e) {
         ? e.srcElement.farthestViewportElement.parentElement.parentElement
             .innerText
         : e.srcElement.parentElement.parentElement.innerText;
-      const notificationcreate = await fetch(
-      `https://chess-t0e4.onrender.com/notificationcreate`,
+    const notificationcreate = await fetch(
+      `http://localhost:3000/notificationcreate`,
       {
         method: "POST",
         body: JSON.stringify({ username: friend_username }),
@@ -46,35 +49,80 @@ offcanvas_body?.addEventListener("click", async function (e) {
     }
   }
 });
+
 socket.on("comingnotification", async function () {
   alert("Notification Received !!");
 });
-function AddFriend(e){
+
+async function AddFriend(e) {
   e.preventDefault();
-  socket.emit("Invite", username?.innerText , e.target.parentElement.parentElement.children[0].innerText);
+  const res = await fetch("http://localhost:3000/api/v1/set", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: socket.id }), // Assuming socket.id is a variable with the correct value
+  });
+  const data = await res.json();
+  socket.emit(
+    "Invite",
+    username?.innerText,
+    e.target.parentElement.parentElement.children[0].innerText,
+    data.data._id
+  );
 }
-socket?.on("Invite", function (sender) {
+
+socket?.on("Invite", async (sender , gameId) => {
+
+  
+  socket.on("cometogame", async() => {
+    waiting_box.style.display = "none";
+    home.style.display = "flex";
+    // const res = await fetch("http://localhost:3000/api/v1/give", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ id: data.data._id }), // Assuming socket.id is a variable with the correct value
+    // });
+    // data = await res.json()
+    // // console.log(data);
+
+  });
+  socket.on("waiting",()=>{
+    waiting_box.style.display = "flex";
+    home.style.display = "none";
+  })
   const userResponse = window.confirm(`${sender} invited you to a game!`);
-  if(userResponse === true){
-    socket.emit("getSocketId" , sender, function (err, socketId) {
+  if (userResponse === true) {
+    const res = await fetch("http://localhost:3000/api/v1/setwithfriend", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: gameId ,socketId:socket.id }), // Assuming socket.id is a variable with the correct value
+    });
+    const data = await res.json();
+  
+    socket.emit("getSocketId", sender, function (err, socketId) {
       if (err) {
         console.error(err);
       } else {
-        socket.emit("InviteAccepted", sender , username?.innerText);
-        socket.emit("gamestart", username?.innerText , socketId);
+        socket.emit("InviteAccepted", sender, username?.innerText , data.data._id , data.data.players);
+        socket.emit("gamestart", data.data._id,data.data.players);
       }
     });
     socket.on("comenewmessage", function (senderId, message) {
       chat_box.style.display = "flex";
       chat_image.style.display = "none";
-  
+
       if (senderId === socket.id) {
         chat_box.innerHTML += `<p class="message text-white"><span class="text-yellow-600">You</span> : ${message.message}</p>`;
       } else {
         chat_box.innerHTML += `<p class="message text-white"><span class="text-red-600">Opposite Player</span> : ${message.message}</p>`;
       }
     });
-  
+
     const chess = new Chess(); // Initialize chess.js
     const boardElement = document.querySelector(".chessboard");
     const chessandchat = document.querySelector(".chessandchat");
@@ -82,7 +130,7 @@ socket?.on("Invite", function (sender) {
     let draggedPiece = null;
     let sourceSquare = null;
     let playerRole = null; // Track if the player is "w", "b", or null (spectator)
-  
+
     const renderBoard = () => {
       const board = chess.board();
       boardElement.innerHTML = ""; // Clear existing board
@@ -92,7 +140,7 @@ socket?.on("Invite", function (sender) {
       chessandchat.style.display = "flex";
       chess_container.style.display = "flex";
       document.querySelector("body").classList.add("body");
-  
+
       board.forEach((row, rowIndex) => {
         row.forEach((square, squareIndex) => {
           const squareElement = document.createElement("div");
@@ -102,7 +150,7 @@ socket?.on("Invite", function (sender) {
           );
           squareElement.dataset.row = rowIndex;
           squareElement.dataset.col = squareIndex;
-  
+
           // Add chess piece if present
           if (square) {
             const pieceElement = document.createElement("div");
@@ -111,10 +159,10 @@ socket?.on("Invite", function (sender) {
               square.color === "w" ? "white" : "black"
             );
             pieceElement.innerText = getPieceUnicode(square);
-  
+
             // Enable dragging for the player's pieces
             pieceElement.draggable = playerRole === square.color;
-  
+
             pieceElement.addEventListener("dragstart", (e) => {
               if (pieceElement.draggable) {
                 draggedPiece = pieceElement;
@@ -122,18 +170,18 @@ socket?.on("Invite", function (sender) {
                 e.dataTransfer.setData("text/plain", "");
               }
             });
-  
+
             pieceElement.addEventListener("dragend", () => {
               draggedPiece = null;
               sourceSquare = null;
             });
-  
+
             squareElement.appendChild(pieceElement); // Append piece to square
           }
-  
+
           // Allow dropping on squares
           squareElement.addEventListener("dragover", (e) => e.preventDefault());
-  
+
           squareElement.addEventListener("drop", (e) => {
             e.preventDefault();
             if (draggedPiece) {
@@ -144,11 +192,11 @@ socket?.on("Invite", function (sender) {
               handleMove(sourceSquare, targetSquare);
             }
           });
-  
+
           boardElement.appendChild(squareElement); // Append square to board
         });
       });
-  
+
       // Flip the board for Black player
       if (playerRole === "b") {
         boardElement.classList.add("flipped");
@@ -156,7 +204,7 @@ socket?.on("Invite", function (sender) {
         boardElement.classList.remove("flipped");
       }
     };
-  
+
     const handleMove = (source, target) => {
       const move = {
         from: `${String.fromCharCode(97 + source.col)}${8 - source.row}`,
@@ -166,8 +214,8 @@ socket?.on("Invite", function (sender) {
       // Attempt the move locally
       const moveResult = chess.move(move);
       if (moveResult) {
-        socket.emit("move", move);
-  
+        socket.emit("move",gameId, move);
+
         // Check game-over conditions
         if (chess.in_checkmate()) {
           const winner = chess.turn() === "w" ? "Black" : "White";
@@ -181,13 +229,13 @@ socket?.on("Invite", function (sender) {
           alert("Game is a draw!");
           socket.emit("gameOver", { winner: null });
         }
-  
+
         renderBoard();
       } else {
         alert("Invalid move! Try again.");
       }
     };
-  
+
     const getPieceUnicode = (piece) => {
       const unicodePieces = {
         p: "♙",
@@ -205,27 +253,27 @@ socket?.on("Invite", function (sender) {
       };
       return unicodePieces[piece.type] || "";
     };
-  
+
     socket.on("playerRole", (role) => {
       playerRole = role;
       renderBoard();
     });
-  
+
     socket.on("spectatorRole", () => {
       playerRole = null;
       renderBoard();
     });
-  
+
     socket.on("boardState", (fen) => {
       chess.load(fen);
       renderBoard();
     });
-  
+
     socket.on("move", (move) => {
       chess.move(move);
       renderBoard();
     });
-  
+
     socket.on("reset", (winner) => {
       alert(`${winner} wins! The game has been reset.`);
       chess.reset();
@@ -236,12 +284,34 @@ socket?.on("Invite", function (sender) {
     });
     // Initial board render
     renderBoard();
-  }else{
+  } else {
     alert("You rejected the invitation");
   }
-})
-socket?.on("InviteAccepted", function (me) {
-  socket.emit("gamestart", me , username?.innerText );
+});
+
+socket?.on("InviteAccepted", async (me,gameId ,Players) => {
+  console.log(me);
+  let data;
+
+  // const res = await fetch("http://localhost:3000/api/v1/give", {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({ id: data.data._id }), // Assuming socket.id is a variable with the correct value
+  // });
+  // data = await res.json()
+  socket.on("cometogame", async() => {
+    waiting_box.style.display = "none";
+    home.style.display = "flex";
+    // console.log(data);
+  });
+  socket.on("waiting",()=>{
+    waiting_box.style.display = "flex";
+    home.style.display = "none";
+  })
+  socket.emit("gamestart", gameId,Players);
+  
   socket.on("comenewmessage", function (senderId, message) {
     chat_box.style.display = "flex";
     chat_image.style.display = "none";
@@ -344,7 +414,7 @@ socket?.on("InviteAccepted", function (me) {
     // Attempt the move locally
     const moveResult = chess.move(move);
     if (moveResult) {
-      socket.emit("move", move);
+      socket.emit("move", gameId,move  );
 
       // Check game-over conditions
       if (chess.in_checkmate()) {
@@ -414,19 +484,17 @@ socket?.on("InviteAccepted", function (me) {
   });
   // Initial board render
   renderBoard();
-})
+});
+
 search_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const response = await fetch(
-    `https://chess-t0e4.onrender.com/search`,
-    {
-      method: "POST",
-      body: JSON.stringify({ username: search_input.value }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await fetch(`http://localhost:3000/search`, {
+    method: "POST",
+    body: JSON.stringify({ username: search_input.value }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
   const data = await response.json();
   search_input.value = "Searching...";
   if (data.success) {
@@ -476,7 +544,7 @@ search_btn?.addEventListener("click", async function (e) {
     button.addEventListener("click", AddFriend);
     friend_list_item.appendChild(button);
     offcanvas_body.appendChild(friend_list_item);
-  }else{
+  } else {
     alert("No user found...");
   }
   search_input.value = "";
@@ -484,7 +552,7 @@ search_btn?.addEventListener("click", async function (e) {
 
 Accept_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationaccept`, {
+  const notification = await fetch(`http://localhost:3000/notificationaccept`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -495,10 +563,10 @@ Accept_btn?.addEventListener("click", async function (e) {
     },
   });
   await notification.json();
-  if(notification.status === 200){
+  if (notification.status === 200) {
     window.location.href = "/";
     alert("Notification Accepted");
-  }else{
+  } else {
     window.location.href = "/";
     alert("Notification Not Accepted");
   }
@@ -506,7 +574,7 @@ Accept_btn?.addEventListener("click", async function (e) {
 
 Reject_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationreject`, {
+  const notification = await fetch(`http://localhost:3000/notificationreject`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -527,22 +595,42 @@ send_btn?.addEventListener("click", function (e) {
   }
 });
 
-btn?.addEventListener("click", function (e) {
+// Chess Board Render
+btn?.addEventListener("click", async (e) => {
   // Disable button to prevent multiple initializations
   e.preventDefault();
   btn.disabled = true;
-  // Emit the userId to the server after connecting
-  socket.emit("gamestart");
-  socket.on("comenewmessage", function (senderId, message) {
-    chat_box.style.display = "flex";
-    chat_image.style.display = "none";
-
-    if (senderId === socket.id) {
-      chat_box.innerHTML += `<p class="message text-white"><span class="text-yellow-600">You</span> : ${message.message}</p>`;
-    } else {
-      chat_box.innerHTML += `<p class="message text-white"><span class="text-red-600">Opposite Player</span> : ${message.message}</p>`;
-    }
+  const res = await fetch("http://localhost:3000/api/v1/set", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: socket.id }), // Assuming socket.id is a variable with the correct value
   });
+  let data = await res.json();
+
+
+  socket.on("cometogame", async() => {
+    waiting_box.style.display = "none";
+    home.style.display = "flex";
+    const res = await fetch("http://localhost:3000/api/v1/give", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: data.data._id }), // Assuming socket.id is a variable with the correct value
+    });
+    data = await res.json()
+    // console.log(data);
+
+  });
+  socket.on("waiting",()=>{
+    waiting_box.style.display = "flex";
+    home.style.display = "none";
+  })
+  
+    socket.emit("gamestart" , data.data._id , data.data.players)
+ 
 
   const chess = new Chess(); // Initialize chess.js
   const boardElement = document.querySelector(".chessboard");
@@ -635,7 +723,9 @@ btn?.addEventListener("click", function (e) {
     // Attempt the move locally
     const moveResult = chess.move(move);
     if (moveResult) {
-      socket.emit("move", move);
+      console.log(data.data.players);
+      
+      socket.emit("move", data.data._id,move  );
 
       // Check game-over conditions
       if (chess.in_checkmate()) {
@@ -676,6 +766,8 @@ btn?.addEventListener("click", function (e) {
   };
 
   socket.on("playerRole", (role) => {
+    console.log(role);
+    
     playerRole = role;
     renderBoard();
   });
@@ -691,6 +783,7 @@ btn?.addEventListener("click", function (e) {
   });
 
   socket.on("move", (move) => {
+    console.log(move);
     chess.move(move);
     renderBoard();
   });

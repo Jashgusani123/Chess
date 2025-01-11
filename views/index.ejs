@@ -13,7 +13,19 @@
 </head>
 
 <body class="w-screen h-screen flex flex-col bg-zinc-900 lg:overflow-hidden  ">
-    <!-- Header -->
+    <div class="waiting-box hidden w-full h-screen  items-center justify-center bg-zinc-800 overflow-hidden">
+        <a href="/" class="absolute top-[3%] left-[3%] font-bold text-white text-2xl bg-transparent" title="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+        </a>
+        <div class="waiting-Content h-full w-full flex justify-center items-center">
+            <p class="text-2xl text-white ">
+                Waiting for other Player<span class="dots-animation"></span>
+            </p>
+        </div>
+    </div>
+    
+    <main class="content-home flex flex-col h-full w-full">
+        <!-- Header -->
     <header class="hearder">
         <nav class="flex justify-start flex-wrap flex-col w-full h-full">
             <div class="logo h-full  flex justify-start items-center ">
@@ -126,6 +138,7 @@
         </div>
 
     </div>
+    </main>
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
