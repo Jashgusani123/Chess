@@ -400,7 +400,7 @@ app.post("/api/v1/setwithfriend" , async(req,res)=>{
     message: "Players get successfully",
     data,
   });
-})
+});
 app.post("/api/v1/createforfriend" , async(req,res)=>{
   const {socketId} = req.body;
   const data = await Player.create({
@@ -414,22 +414,27 @@ app.post("/api/v1/createforfriend" , async(req,res)=>{
     message: "Players get successfully",
     data,
   });
+});
+app.delete("/api/v1/deleteinobj" , async(req , res)=>{
+  const {role , id} = req.body;
+  const data = await Player.findById({_id:id});
+  if(role === "w"){
+    data.players.black = ""
+  }else{
+    data.players.white = ""
+  }
+  data.save()
+  res.status(201).json({
+    message:"Player Remove Successfully!!",
+    data
+  })
 })
-
 
 let userSocketMap = {}; // Object to store username and socket ID
 const games = {};
 
 io.on("connection", function (socket) {
   console.log("Connected ", socket.id);
-  socket.on("checkwaiting", (username, callback) => {
-    if (players.white !== null && players.black !== null) {
-      io.to(socket.id).emit("wating");
-      callback(null, socket.id);
-    } else {
-      callback("User not found", null);
-    }
-  });
   // Store socket ID with username when user provides a username
   socket.on("setUsername", (username) => {
     if (!username) {
@@ -456,7 +461,7 @@ io.on("connection", function (socket) {
     io.to(userSocketMap[sender]).emit("InviteAccepted", me ,gameId , players);
   });
 
-  socket.on("gamestart", function (gameId, players) {
+  socket.on("gamestart", function (gameId, players , role) {
     // When a new game starts, store it in the 'games' object
     console.log(`Starting game: ${gameId} between ${players.white} (White) and ${players.black} (Black)`);
     
@@ -472,7 +477,11 @@ io.on("connection", function (socket) {
       };
         // Emit player roles and game start event
         io.to(players.white).emit("playerRole", "w");
-        io.to(players.white).emit("cometogame");
+        if(role === "w"){
+          io.to(players.black).emit("cometogame");
+        }else{
+          io.to(players.white).emit("cometogame");
+        }
         io.to(players.black).emit("playerRole", "b");
       console.log(`Game instance stored for ${gameId}:`, games[gameId]);
     } else {
@@ -557,8 +566,8 @@ io.on("connection", function (socket) {
   });
   socket.on("disconnect", function () {
     console.log("User disconnected:", socket.id);
-
-    // Remove user from the userSocketMap when they disconnect
+  
+    // Remove the user from the userSocketMap
     for (let username in userSocketMap) {
       if (userSocketMap[username] === socket.id) {
         delete userSocketMap[username];
@@ -566,7 +575,31 @@ io.on("connection", function (socket) {
         break;
       }
     }
+  
+    // Remove the user from the game they are part of
+    for (let gameId in games) {
+      const game = games[gameId];
+      console.log(game);
+      
+      // Check if the disconnected socket is a player in the game
+      if (game.players.white === socket.id) {
+        game.players.white = "";
+        io.to(game.players.black).emit("wait_Your_Opponent_disconected" , "b" , gameId)
+        console.log(`Socket ${socket.id} removed as White from game ${gameId}`);
+      } else if (game.players.black === socket.id) {
+        game.players.black = "";
+        io.to(game.players.white).emit("wait_Your_Opponent_disconected" , "w" , gameId)
+        console.log(`Socket ${socket.id} removed as Black from game ${gameId}`);
+      }
+  
+      // Optional: Remove the game if no players are left
+      if (!game.players.white && !game.players.black) {
+        delete games[gameId];
+        console.log(`Game ${gameId} has been removed as it has no players`);
+      }
+    }
   });
+  
 });
 
 server.listen(PORT, () => {

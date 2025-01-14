@@ -291,16 +291,6 @@ socket?.on("Invite", async (sender , gameId) => {
 
 socket?.on("InviteAccepted", async (me,gameId ,Players) => {
   console.log(me);
-  let data;
-
-  // const res = await fetch("http://localhost:3000/api/v1/give", {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({ id: data.data._id }), // Assuming socket.id is a variable with the correct value
-  // });
-  // data = await res.json()
   socket.on("cometogame", async() => {
     waiting_box.style.display = "none";
     home.style.display = "flex";
@@ -624,12 +614,24 @@ btn?.addEventListener("click", async (e) => {
     // console.log(data);
 
   });
+  socket.on("wait_Your_Opponent_disconected",async(role , gameId)=>{
+    waiting_box.style.display = "flex";
+    home.style.display = "none";
+    const res = await fetch("http://localhost:3000/api/v1/deleteinobj", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ role, id: gameId }), // Assuming socket.id is a variable with the correct value
+    });
+    data = await res.json()
+  })
   socket.on("waiting",()=>{
     waiting_box.style.display = "flex";
     home.style.display = "none";
   })
-  
-    socket.emit("gamestart" , data.data._id , data.data.players)
+  const role = data.data.players.white === socket.id ? "w":"b";
+    socket.emit("gamestart" , data.data._id , data.data.players , role)
  
 
   const chess = new Chess(); // Initialize chess.js
