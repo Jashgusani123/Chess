@@ -32,7 +32,7 @@ offcanvas_body?.addEventListener("click", async function (e) {
             .innerText
         : e.srcElement.parentElement.parentElement.innerText;
     const notificationcreate = await fetch(
-      `http://localhost:3000/notificationcreate`,
+      `https://chess-t0e4.onrender.com/notificationcreate`,
       {
         method: "POST",
         body: JSON.stringify({ username: friend_username }),
@@ -56,7 +56,7 @@ socket.on("comingnotification", async function () {
 
 async function AddFriend(e) {
   e.preventDefault();
-  const res = await fetch("http://localhost:3000/api/v1/set", {
+  const res = await fetch(`https://chess-t0e4.onrender.com/api/v1/set`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -72,54 +72,68 @@ async function AddFriend(e) {
   );
 }
 
-socket?.on("Invite", async (sender , gameId) => {
+socket.on("comenewmessage", function (senderId, message) {
+  chat_box.style.display = "flex";
+  chat_image.style.display = "none";
 
-  
-  socket.on("cometogame", async() => {
+  if (senderId === socket.id) {
+    chat_box.innerHTML += `<p class="message text-white"><span class="text-yellow-600">You</span> : ${message}</p>`;
+  } else {
+    chat_box.innerHTML += `<p class="message text-white"><span class="text-red-600">Opposite Player</span> : ${message}</p>`;
+  }
+});
+
+socket?.on("Invite", async (sender, gameId) => {
+  let finish = false;
+
+  socket.on("gamefinsh", async (gameId, tag) => {
+    finish = tag;
+    
+     await fetch(`https://chess-t0e4.onrender.com/api/v1/deleteinobj`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: gameId }), // Assuming socket.id is a variable with the correct value
+    });
+    
+    window.location.href = "/";
+  });
+
+  socket.on("cometogame", async () => {
     waiting_box.style.display = "none";
     home.style.display = "flex";
-    // const res = await fetch("http://localhost:3000/api/v1/give", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ id: data.data._id }), // Assuming socket.id is a variable with the correct value
-    // });
-    // data = await res.json()
-    // // console.log(data);
-
   });
-  socket.on("waiting",()=>{
+  
+  socket.on("waiting", () => {
     waiting_box.style.display = "flex";
     home.style.display = "none";
-  })
+  });
+
   const userResponse = window.confirm(`${sender} invited you to a game!`);
+  
   if (userResponse === true) {
-    const res = await fetch("http://localhost:3000/api/v1/setwithfriend", {
+    const res = await fetch(`https://chess-t0e4.onrender.com/api/v1/setwithfriend`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ id: gameId ,socketId:socket.id }), // Assuming socket.id is a variable with the correct value
+      body: JSON.stringify({ id: gameId, socketId: socket.id }), // Assuming socket.id is a variable with the correct value
     });
     const data = await res.json();
-  
+
     socket.emit("getSocketId", sender, function (err, socketId) {
       if (err) {
         console.error(err);
       } else {
-        socket.emit("InviteAccepted", sender, username?.innerText , data.data._id , data.data.players);
-        socket.emit("gamestart", data.data._id,data.data.players);
-      }
-    });
-    socket.on("comenewmessage", function (senderId, message) {
-      chat_box.style.display = "flex";
-      chat_image.style.display = "none";
-
-      if (senderId === socket.id) {
-        chat_box.innerHTML += `<p class="message text-white"><span class="text-yellow-600">You</span> : ${message.message}</p>`;
-      } else {
-        chat_box.innerHTML += `<p class="message text-white"><span class="text-red-600">Opposite Player</span> : ${message.message}</p>`;
+        socket.emit(
+          "InviteAccepted",
+          sender,
+          username?.innerText,
+          data.data._id,
+          data.data.players
+        );
+        socket.emit("gamestart", data.data._id, data.data.players);
       }
     });
 
@@ -214,20 +228,20 @@ socket?.on("Invite", async (sender , gameId) => {
       // Attempt the move locally
       const moveResult = chess.move(move);
       if (moveResult) {
-        socket.emit("move",gameId, move);
+        socket.emit("move", gameId, move);
 
         // Check game-over conditions
         if (chess.in_checkmate()) {
           const winner = chess.turn() === "w" ? "Black" : "White";
           alert(`${winner} wins by checkmate!`);
-          socket.emit("gameOver", { winner });
+          socket.emit("gameOver", { winner, gameId: gameId });
         } else if (
           chess.in_stalemate() ||
           chess.in_draw() ||
           chess.insufficient_material()
         ) {
           alert("Game is a draw!");
-          socket.emit("gameOver", { winner: null });
+          socket.emit("gameOver", { winner: null, gameId: gameId });
         }
 
         renderBoard();
@@ -279,6 +293,7 @@ socket?.on("Invite", async (sender , gameId) => {
       chess.reset();
       renderBoard();
     });
+
     socket.on("sendRecording", (game_id, type) => {
       window.location.href = `/game/${game_id}?type=${type}`;
     });
@@ -289,29 +304,35 @@ socket?.on("Invite", async (sender , gameId) => {
   }
 });
 
-socket?.on("InviteAccepted", async (me,gameId ,Players) => {
-  console.log(me);
-  socket.on("cometogame", async() => {
+socket?.on("InviteAccepted", async (me, gameId, Players) => {
+  let finish = false;
+  socket.on("gamefinsh", async (gameId, tag) => {
+    finish = tag;
+    
+     await fetch(`https://chess-t0e4.onrender.com/api/v1/deleteinobj`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: gameId }), // Assuming socket.id is a variable with the correct value
+    });
+    
+    window.location.href = "/";
+  });
+
+  socket.on("cometogame", async () => {
     waiting_box.style.display = "none";
     home.style.display = "flex";
-    // console.log(data);
+    
   });
-  socket.on("waiting",()=>{
+
+  socket.on("waiting", () => {
     waiting_box.style.display = "flex";
     home.style.display = "none";
-  })
-  socket.emit("gamestart", gameId,Players);
-  
-  socket.on("comenewmessage", function (senderId, message) {
-    chat_box.style.display = "flex";
-    chat_image.style.display = "none";
-
-    if (senderId === socket.id) {
-      chat_box.innerHTML += `<p class="message text-white"><span class="text-yellow-600">You</span> : ${message.message}</p>`;
-    } else {
-      chat_box.innerHTML += `<p class="message text-white"><span class="text-red-600">Opposite Player</span> : ${message.message}</p>`;
-    }
   });
+
+  socket.emit("gamestart", gameId, Players);
+
 
   const chess = new Chess(); // Initialize chess.js
   const boardElement = document.querySelector(".chessboard");
@@ -404,20 +425,20 @@ socket?.on("InviteAccepted", async (me,gameId ,Players) => {
     // Attempt the move locally
     const moveResult = chess.move(move);
     if (moveResult) {
-      socket.emit("move", gameId,move  );
+      socket.emit("move", gameId, move);
 
       // Check game-over conditions
       if (chess.in_checkmate()) {
         const winner = chess.turn() === "w" ? "Black" : "White";
         alert(`${winner} wins by checkmate!`);
-        socket.emit("gameOver", { winner });
+        socket.emit("gameOver", { winner, gameId });
       } else if (
         chess.in_stalemate() ||
         chess.in_draw() ||
         chess.insufficient_material()
       ) {
         alert("Game is a draw!");
-        socket.emit("gameOver", { winner: null });
+        socket.emit("gameOver", { winner: null, gameId });
       }
 
       renderBoard();
@@ -478,7 +499,7 @@ socket?.on("InviteAccepted", async (me,gameId ,Players) => {
 
 search_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const response = await fetch(`http://localhost:3000/search`, {
+  const response = await fetch(`https://chess-t0e4.onrender.com/search`, {
     method: "POST",
     body: JSON.stringify({ username: search_input.value }),
     headers: {
@@ -542,7 +563,7 @@ search_btn?.addEventListener("click", async function (e) {
 
 Accept_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`http://localhost:3000/notificationaccept`, {
+  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationaccept`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -564,7 +585,7 @@ Accept_btn?.addEventListener("click", async function (e) {
 
 Reject_btn?.addEventListener("click", async function (e) {
   e.preventDefault();
-  const notification = await fetch(`http://localhost:3000/notificationreject`, {
+  const notification = await fetch(`https://chess-t0e4.onrender.com/notificationreject`, {
     method: "POST",
     body: JSON.stringify({
       senderusername:
@@ -577,10 +598,22 @@ Reject_btn?.addEventListener("click", async function (e) {
   await notification.json();
 });
 
-send_btn?.addEventListener("click", function (e) {
+send_btn?.addEventListener("click", async (e) => {
   e.preventDefault();
   if (socket) {
-    socket.emit("newmessage", { message: message.value });
+    const res = await fetch(`https://chess-t0e4.onrender.com/api/v1/give`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ socketId: socket.id }), // Assuming socket.id is a variable with the correct value
+    });
+    const data = await res.json();
+
+    socket.emit("newmessage", {
+      message: message.value,
+      gameId: data.data._id,
+    });
     message.value = "";
   }
 });
@@ -590,7 +623,8 @@ btn?.addEventListener("click", async (e) => {
   // Disable button to prevent multiple initializations
   e.preventDefault();
   btn.disabled = true;
-  const res = await fetch("http://localhost:3000/api/v1/set", {
+  let finish = false;
+  const res = await fetch(`https://chess-t0e4.onrender.com/api/v1/set`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -598,41 +632,54 @@ btn?.addEventListener("click", async (e) => {
     body: JSON.stringify({ id: socket.id }), // Assuming socket.id is a variable with the correct value
   });
   let data = await res.json();
+  socket.on("gamefinsh", async (gameId, tag) => {
+    finish = tag;
+    
+    await fetch(`https://chess-t0e4.onrender.com/api/v1/deleteinobj`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: gameId }), // Assuming socket.id is a variable with the correct value
+    });
+    
+    window.location.href = "/";
+  });
+  socket?.on("Your_Opponent_disconected", async (gameId) => {
+    window.location.href = "/";
+    if (!finish) {
+      alert("You Win !! ( Your Opponent Is Disconnected )");
+    }
 
+     await fetch(`https://chess-t0e4.onrender.com/api/v1/deleteinobj`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id: gameId }), // Assuming socket.id is a variable with the correct value
+    });
+  });
 
-  socket.on("cometogame", async() => {
+  socket.on("cometogame", async () => {
     waiting_box.style.display = "none";
     home.style.display = "flex";
-    const res = await fetch("http://localhost:3000/api/v1/give", {
+    const res = await fetch(`https://chess-t0e4.onrender.com/api/v1/give`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ id: data.data._id }), // Assuming socket.id is a variable with the correct value
     });
-    data = await res.json()
-    // console.log(data);
-
+    data = await res.json();
   });
-  socket.on("wait_Your_Opponent_disconected",async(role , gameId)=>{
+
+  socket.on("waiting", () => {
     waiting_box.style.display = "flex";
     home.style.display = "none";
-    const res = await fetch("http://localhost:3000/api/v1/deleteinobj", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ role, id: gameId }), // Assuming socket.id is a variable with the correct value
-    });
-    data = await res.json()
-  })
-  socket.on("waiting",()=>{
-    waiting_box.style.display = "flex";
-    home.style.display = "none";
-  })
-  const role = data.data.players.white === socket.id ? "w":"b";
-    socket.emit("gamestart" , data.data._id , data.data.players , role)
- 
+  });
+
+  const role = data.data.players.white === socket.id ? "w" : "b";
+  socket.emit("gamestart", data.data._id, data.data.players, role);
 
   const chess = new Chess(); // Initialize chess.js
   const boardElement = document.querySelector(".chessboard");
@@ -725,22 +772,21 @@ btn?.addEventListener("click", async (e) => {
     // Attempt the move locally
     const moveResult = chess.move(move);
     if (moveResult) {
-      console.log(data.data.players);
-      
-      socket.emit("move", data.data._id,move  );
+
+      socket.emit("move", data.data._id, move);
 
       // Check game-over conditions
       if (chess.in_checkmate()) {
         const winner = chess.turn() === "w" ? "Black" : "White";
         alert(`${winner} wins by checkmate!`);
-        socket.emit("gameOver", { winner });
+        socket.emit("gameOver", { winner, gameId: data.data._id });
       } else if (
         chess.in_stalemate() ||
         chess.in_draw() ||
         chess.insufficient_material()
       ) {
         alert("Game is a draw!");
-        socket.emit("gameOver", { winner: null });
+        socket.emit("gameOver", { winner: null, gameId: data.data._id });
       }
 
       renderBoard();
@@ -768,8 +814,7 @@ btn?.addEventListener("click", async (e) => {
   };
 
   socket.on("playerRole", (role) => {
-    console.log(role);
-    
+
     playerRole = role;
     renderBoard();
   });
@@ -785,7 +830,6 @@ btn?.addEventListener("click", async (e) => {
   });
 
   socket.on("move", (move) => {
-    console.log(move);
     chess.move(move);
     renderBoard();
   });

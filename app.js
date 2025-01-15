@@ -24,7 +24,6 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const chess = new Chess();
-let players = { white: null, black: null };
 let currentPlayer = "w";
 
 app.use(cookieParser());
@@ -181,7 +180,7 @@ app.get("/game/:id", isLoggedin, async (req, res) => {
     await user.save();
 
     // Respond with success
-    res.render("index", { searchedUser: null });
+    res.redirect("/");
   } catch (error) {
     console.error(error);
     res
@@ -333,7 +332,7 @@ app.post("/api/v1/set", async (req, res) => {
 
     // Retrieve all Player documents and select only the players field
     const wholeData = await Player.find().select("players");
-    
+
     // Find the first object where either white or black is empty or missing
     const emptyObject = wholeData.find(
       (i) =>
@@ -381,18 +380,31 @@ app.post("/api/v1/set", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-app.post("/api/v1/give" , async(req , res)=>{
-  const {id} = req.body;
-  const data = await Player.findById({_id:id})
+app.post("/api/v1/give", async (req, res) => {
+  const { id, socketId } = req.body;
+  if (id) {
+    data = await Player.findById({ _id: id });
+  } else {
+    data = await Player.findOne({
+      $or: [{ "players.white": socketId }, { "players.black": socketId }],
+    })
+      .sort({ createdAt: -1 }) // Sort by creation date to get the latest one
+      .lean(); // Use lean for performance if you don't need full Mongoose document features
 
-  res.status(201).json({
-    message: "Players get successfully",
+    if (!data) {
+      return res.status(404).json({
+        message: "Player not found",
+      });
+    }
+  }
+  res.status(200).json({
+    message: "Player found successfully",
     data,
   });
 });
-app.post("/api/v1/setwithfriend" , async(req,res)=>{
-  const {id , socketId} = req.body;
-  const data = await Player.findById({_id:id})
+app.post("/api/v1/setwithfriend", async (req, res) => {
+  const { id, socketId } = req.body;
+  const data = await Player.findById({ _id: id });
 
   data.players.black = socketId;
   data.save();
@@ -401,48 +413,41 @@ app.post("/api/v1/setwithfriend" , async(req,res)=>{
     data,
   });
 });
-app.post("/api/v1/createforfriend" , async(req,res)=>{
-  const {socketId} = req.body;
+app.post("/api/v1/createforfriend", async (req, res) => {
+  const { socketId } = req.body;
   const data = await Player.create({
-    players:{
-      white:socketId,
-      black:""
-    }
-  })
+    players: {
+      white: socketId,
+      black: "",
+    },
+  });
 
   res.status(201).json({
     message: "Players get successfully",
     data,
   });
 });
-app.delete("/api/v1/deleteinobj" , async(req , res)=>{
-  const {role , id} = req.body;
-  const data = await Player.findById({_id:id});
-  if(role === "w"){
-    data.players.black = ""
-  }else{
-    data.players.white = ""
-  }
-  data.save()
+app.delete("/api/v1/deleteinobj", async (req, res) => {
+  const { id } = req.body;
+  const data = await Player.findByIdAndDelete({ _id: id });
   res.status(201).json({
-    message:"Player Remove Successfully!!",
-    data
-  })
-})
+    message: "Player Remove Successfully!!",
+  });
+});
 
 let userSocketMap = {}; // Object to store username and socket ID
 const games = {};
 
 io.on("connection", function (socket) {
   console.log("Connected ", socket.id);
-  // Store socket ID with username when user provides a username
+  
   socket.on("setUsername", (username) => {
     if (!username) {
       console.error("Username is undefined!");
       return;
     }
     userSocketMap[username] = socket.id;
-    console.log(`Username ${username} mapped to socket ID ${socket.id}`);
+    // console.log(`Username ${username} mapped to socket ID ${socket.id}`);
   });
   socket.on("getSocketId", (username, callback) => {
     if (userSocketMap[username]) {
@@ -454,56 +459,52 @@ io.on("connection", function (socket) {
   socket.on("notificationcreate", function (username) {
     io.to(userSocketMap[username]).emit("comingnotification");
   });
-  socket.on("Invite", function (sender, who , gameId) {
-    io.to(userSocketMap[who]).emit("Invite", sender,gameId);
+  socket.on("Invite", function (sender, who, gameId) {
+    io.to(userSocketMap[who]).emit("Invite", sender, gameId);
   });
-  socket.on("InviteAccepted", function (sender, me , gameId , players) {
-    io.to(userSocketMap[sender]).emit("InviteAccepted", me ,gameId , players);
+  socket.on("InviteAccepted", function (sender, me, gameId, players) {
+    io.to(userSocketMap[sender]).emit("InviteAccepted", me, gameId, players);
   });
 
-  socket.on("gamestart", function (gameId, players , role) {
-    // When a new game starts, store it in the 'games' object
-    console.log(`Starting game: ${gameId} between ${players.white} (White) and ${players.black} (Black)`);
-    
+  socket.on("gamestart", function (gameId, players, role) {
     if (players.white && players.black) {
       // Create the game object and store it with the gameId
       games[gameId] = {
         players: {
           white: players.white,
-          black: players.black
+          black: players.black,
         },
-        chess: new Chess(),  // Assuming you are using the Chess library for the game state
-        status: "started"
+        chess: new Chess(), // Assuming you are using the Chess library for the game state
+        status: "started",
       };
-        // Emit player roles and game start event
-        io.to(players.white).emit("playerRole", "w");
-        if(role === "w"){
-          io.to(players.black).emit("cometogame");
-        }else{
-          io.to(players.white).emit("cometogame");
-        }
-        io.to(players.black).emit("playerRole", "b");
-      console.log(`Game instance stored for ${gameId}:`, games[gameId]);
+      // Emit player roles and game start event
+      io.to(players.white).emit("playerRole", "w");
+      if (role === "w") {
+        io.to(players.black).emit("cometogame");
+      } else {
+        io.to(players.white).emit("cometogame");
+      }
+      io.to(players.black).emit("playerRole", "b");
+      // console.log(`Game instance stored for ${gameId}:`, games[gameId]);
     } else {
       socket.emit("waiting");
     }
   });
-  
+
   socket.on("move", function (gameId, move) {
     // Log the received gameId to ensure it's correct
-    console.log("Received gameId:", gameId);
-  
+    // console.log("Received gameId:", gameId);
+
     const game = games[gameId]; // Look up the game in the games object
-    console.log("Game found:", game);
-  
+
     if (!game) {
       socket.emit("error", "Game not found");
       return;
     }
-  
-    const { chess,players  } = game;
-    const {white , black} = players
-    
+
+    const { chess, players } = game;
+    const { white, black } = players;
+
     try {
       // Ensure only the correct player can make the move
       if (chess.turn() === "w" && socket.id !== white) {
@@ -512,15 +513,26 @@ io.on("connection", function (socket) {
       if (chess.turn() === "b" && socket.id !== black) {
         return;
       }
-  
+
       const result = chess.move(move);
-  
+
       if (result) {
-        const currentPlayer = chess.turn();
         const opponentSocket = socket.id === white ? black : white;
-  
-        console.log("Current player:", currentPlayer, "Opposing socket ID:", opponentSocket);
-  
+        currentPlayer = chess.turn();
+        // Record the move
+        const latestMove = chess.history({ verbose: true });
+        // Clear the recording array to ensure no duplicates from previous games
+        recording = [];
+        // Iterate over each move one by one
+        latestMove.forEach((move, index) => {
+          // Push the 'from' and 'to' of each move to the recording array
+          recording.push({
+            color: move.color,
+            piece: move.piece,
+            from: move.from,
+            to: move.to,
+          });
+        });
         io.to(opponentSocket).emit("boardState", chess.fen());
         io.to(opponentSocket).emit("move", move);
       } else {
@@ -531,75 +543,101 @@ io.on("connection", function (socket) {
       console.error("Error occurred during move: ", err);
     }
   });
-  
-  
-  socket.on("gameOver", async ({ winner }) => {
+
+  socket.on("gameOver", async ({ winner, gameId }) => {
     // Identify the loser based on the turn
-    const loser = chess.turn() === "b" ? players.black : players.white;
+    const { white, black } = games[gameId].players;
+
+    const loser = chess.turn() === "b" ? white : black;
     const result = winner ? "Win" : "Draw";
+
+    let withUserNameOfLoser;
+    for (let username in userSocketMap) {
+      if (userSocketMap[username] === loser) {
+        withUserNameOfLoser = username;
+      }
+    }
 
     // Save the game data into the Game model
     const game = new Game({
       recording: recording, // Store the recorded moves
       winner: winner,
-      loser: loser,
+      loser: withUserNameOfLoser,
       result: result,
     });
 
     try {
       await game.save(); // Save the game document
 
-      if (loser === players.white) {
-        io.to(players.white).emit("sendRecording", game._id, "loser");
-        io.to(players.black).emit("sendRecording", game._id, "winner");
+      if (loser === white) {
+        io.to(white).emit("sendRecording", game._id, "loser");
+        io.to(black).emit("sendRecording", game._id, "winner");
       } else {
-        io.to(players.black).emit("sendRecording", game._id, "loser");
-        io.to(players.white).emit("sendRecording", game._id, "winner");
+        io.to(black).emit("sendRecording", game._id, "loser");
+        io.to(white).emit("sendRecording", game._id, "winner");
       }
 
       // Reset the chess game for a new match
       chess.reset();
-      io.emit("reset", winner); // Notify clients to reset the board
+      io.to(white).emit("gamefinsh", gameId, true);
+      io.to(black).emit("gamefinsh", gameId, true);
+      io.to(white).emit("reset", winner);
+      io.to(black).emit("reset", winner);
+      // Notify clients to reset the board
     } catch (error) {
       console.error("Error saving game data:", error);
     }
   });
+
+  socket.on("newmessage", function (data) {
+    let message = data.message;
+    const { gameId } = data;
+
+    // Check if message and gameId are present
+    if (!message) {
+      console.error("Message is missing");
+      return; // Exit if message is not present
+    }
+
+    const { white, black } = games[gameId].players;
+
+    // Emit the message to both players
+    io.to(white).emit("comenewmessage", socket.id, message);
+    io.to(black).emit("comenewmessage", socket.id, message);
+  });
+
   socket.on("disconnect", function () {
-    console.log("User disconnected:", socket.id);
-  
+    // Remove the user from the game they are part of
+    for (let gameId in games) {
+      const game = games[gameId];
+
+      // Check if the disconnected socket is a player in the game
+      if (game.players.white === socket.id) {
+        io.to(game.players.black).emit("Your_Opponent_disconected", gameId);
+      } else if (game.players.black === socket.id) {
+        if (game.players.white) {
+          io.to(game.players.white).emit("Your_Opponent_disconected", gameId);
+        }
+
+        // console.log(`Socket ${socket.id} removed as Black from game ${gameId}`);
+      }
+
+      // Optional: Remove the game if no players are left
+      if (!game.players.white && !game.players.black) {
+        delete games[gameId];
+        // console.log(`Game ${gameId} has been removed as it has no players`);
+      }
+    }
+
     // Remove the user from the userSocketMap
     for (let username in userSocketMap) {
       if (userSocketMap[username] === socket.id) {
         delete userSocketMap[username];
-        console.log(`User ${username} has been removed from userSocketMap`);
+        // console.log(`User ${username} has been removed from userSocketMap`);
         break;
       }
     }
-  
-    // Remove the user from the game they are part of
-    for (let gameId in games) {
-      const game = games[gameId];
-      console.log(game);
-      
-      // Check if the disconnected socket is a player in the game
-      if (game.players.white === socket.id) {
-        game.players.white = "";
-        io.to(game.players.black).emit("wait_Your_Opponent_disconected" , "b" , gameId)
-        console.log(`Socket ${socket.id} removed as White from game ${gameId}`);
-      } else if (game.players.black === socket.id) {
-        game.players.black = "";
-        io.to(game.players.white).emit("wait_Your_Opponent_disconected" , "w" , gameId)
-        console.log(`Socket ${socket.id} removed as Black from game ${gameId}`);
-      }
-  
-      // Optional: Remove the game if no players are left
-      if (!game.players.white && !game.players.black) {
-        delete games[gameId];
-        console.log(`Game ${gameId} has been removed as it has no players`);
-      }
-    }
   });
-  
 });
 
 server.listen(PORT, () => {
