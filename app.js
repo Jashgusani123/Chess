@@ -78,7 +78,7 @@ app.post("/loggedin", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).send("User not found!"); // Create a 404 NotFound page
+      return res.render("NotFound" , {message:"User Not Found!!" , statusCode:"404"}); // Create a 404 NotFound page
     }
 
     const compare_pass = await bcrypt.compare(password, user.password);
@@ -87,11 +87,11 @@ app.post("/loggedin", async (req, res) => {
       cookieSender(res, user);
       res.redirect("/");
     } else {
-      res.send("Incorrect password!");
+      res.render("SWW")
     }
   } catch (err) {
     console.error(err);
-    res.send("Something went wrong!");
+    res.render("SWW");
   }
 });
 app.post("/register", upload.single("avatar"), async (req, res) => {
@@ -103,7 +103,7 @@ app.post("/register", upload.single("avatar"), async (req, res) => {
       async (error, result) => {
         if (error) {
           console.error("Error uploading to Cloudinary:", error);
-          return res.status(500).send("Failed to upload avatar.");
+          return res.render("SWW");
         }
 
         const avatarUrl = result.secure_url;
@@ -129,7 +129,8 @@ app.post("/register", upload.single("avatar"), async (req, res) => {
     result.end(req.file.buffer);
   } catch (err) {
     console.error(err);
-    res.status(500).send("An error occurred while creating user.");
+    // res.status(500).send("An error occurred while creating user.");
+    res.render("SWW")
   }
 });
 app.get("/profile", isLoggedin, async (req, res) => {
@@ -183,9 +184,10 @@ app.get("/game/:id", isLoggedin, async (req, res) => {
     res.redirect("/");
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ message: "An error occurred while adding the game" });
+    // res
+    //   .status(500)
+    //   .json({ message: "An error occurred while adding the game" });
+    res.render("SWW")
   }
 });
 app.get("/mygames", isLoggedin, async (req, res) => {
@@ -198,7 +200,7 @@ app.get("/watch/:gameId", async (req, res) => {
     res.render("watch");
   } catch (error) {
     console.error(error);
-    res.status(500).send("Something went wrong.");
+    res.render("SWW");
   }
 });
 app.get("/getrecording", isLoggedin, async (req, res) => {
@@ -222,7 +224,7 @@ app.get("/delete/:gameId", isLoggedin, async (req, res) => {
     res.redirect("/mygames");
   } catch (err) {
     console.error(err);
-    res.status(500).send("Server Error");
+    res.render("SWW");
   }
 });
 app.post("/search", isLoggedin, async (req, res) => {
