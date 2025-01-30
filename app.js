@@ -76,7 +76,11 @@ app.get("/login", isLoggedin, (req, res) => {
 app.post("/loggedin", async (req, res) => {
   try {
     const { email, password } = req.body;
+    if(!email && !password ){
+      return res.render("NotFound" , {message:"Please Fill that Details" , statusCode:"404"})
+    }
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.render("NotFound" , {message:"User Not Found!!" , statusCode:"404"}); // Create a 404 NotFound page
     }
